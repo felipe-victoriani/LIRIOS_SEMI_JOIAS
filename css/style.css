@@ -377,10 +377,12 @@
     overflow: visible;
   }
   .hero__brilho {
-    /* Sem "filter: drop-shadow" aqui de propósito — combinado com animação de transform/opacity
-       num SVG, isso cria uma camada de composição cujo retângulo delimitador aparece como um
-       quadrado visível em navegadores mobile (reproduzido num iPhone real testando o deploy).
-       O brilho em si já vem do preenchimento (fill) e da animação, sem precisar do filtro. */
+    /* Nem "filter" nem "transform" aqui — tirei o drop-shadow numa rodada e o quadrado
+       continuou aparecendo (reproduzido num iPhone real), então o problema era a animação
+       de "transform: scale/rotate" direto no elemento <svg>: esse navegador mobile promove
+       o SVG a uma camada de composição própria durante a animação e pinta o retângulo
+       delimitador dessa camada em vez de só a forma da estrela. Só opacidade anima aqui —
+       é o tipo de animação CSS mais compatível que existe, sem promoção de camada estranha. */
     position: absolute;
     animation: brilho-pisca 2.8s ease-in-out infinite;
   }
@@ -390,13 +392,17 @@
   .hero__brilho--4 { top: 85%; left: 6%;   color: var(--rosa-500); animation-delay: 0.4s; animation-duration: 2.6s; }
 
   @keyframes brilho-pisca {
-    0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
-    50% { opacity: 1; transform: scale(1) rotate(8deg); }
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
   }
 
   @media (max-width: 54rem) {
     .hero { grid-template-columns: 1fr; padding-block: var(--espaco-lg); }
     .hero__midia { order: -1; }
+    /* Os brilhos já causaram dois bugs de renderização em navegador mobile real (filter e,
+       depois, transform animado) — são só enfeite, então no mobile a prioridade é
+       confiabilidade: tiram esse elemento de cena em vez de arriscar um terceiro caso. */
+    .hero__brilhos { display: none; }
   }
 
   .hero__etiqueta {
