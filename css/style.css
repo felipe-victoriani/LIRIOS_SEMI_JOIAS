@@ -205,30 +205,6 @@
     border-radius: 50%;
     box-shadow: 0 0 0 2px var(--branco), 0 0 0 3px var(--rosa-300);
   }
-  /* "Chip" de vidro (glassmorphism) ao redor do nome — mesma família de efeito já usada no
-     cabeçalho/carrinho/menu, aplicada aqui como um pingente translúcido ao lado do logo. */
-  .cabecalho__nome {
-    /* inline-block, não inline-flex: flex trataria o texto e o <em> como itens separados
-       e comia o espaço entre "Lírio" e "Semijoias". */
-    display: inline-block;
-    padding: 0.4em 0.95em;
-    border-radius: var(--raio-pill);
-    font-family: var(--fonte-display);
-    font-weight: 600;
-    font-size: 1.15rem;
-    color: var(--rosa-800);
-    background: linear-gradient(155deg,
-      color-mix(in oklch, var(--branco) 55%, transparent),
-      color-mix(in oklch, var(--branco) 20%, transparent));
-    backdrop-filter: blur(10px) saturate(180%);
-    -webkit-backdrop-filter: blur(10px) saturate(180%);
-    border: 1px solid color-mix(in oklch, var(--branco) 65%, transparent);
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklch, var(--branco) 80%, transparent),
-      inset 0 -6px 10px -6px color-mix(in oklch, var(--rosa-400) 35%, transparent),
-      0 3px 10px color-mix(in oklch, var(--rosa-800) 10%, transparent);
-  }
-  .cabecalho__nome em { font-style: italic; color: var(--rosa-600); }
 
   .cabecalho__nav ul { display: flex; gap: var(--espaco-md); }
   .cabecalho__nav a {
@@ -365,7 +341,7 @@
         color-mix(in oklch, var(--rosa-50) 85%, transparent) 0%,
         color-mix(in oklch, var(--rosa-50) 40%, transparent) 45%,
         transparent 70%),
-      url("../assets/nova_img_hero.jpeg");
+      url("../assets/hero-fundo.webp");
     background-size: 100% 100%, 100% auto;
     background-position: 0 0, center;
     background-repeat: no-repeat;
@@ -441,7 +417,7 @@
         linear-gradient(180deg,
           color-mix(in oklch, var(--rosa-50) 60%, transparent),
           color-mix(in oklch, var(--rosa-50) 48%, transparent)),
-        url("../assets/nova_img_hero.jpeg");
+        url("../assets/hero-fundo.webp");
       background-size: 100% 100%, cover;
       background-position: 0 0, 84% center;
     }
@@ -498,48 +474,6 @@
 
   .hero__cta { display: flex; flex-wrap: wrap; gap: var(--espaco-sm); }
 
-
-  /* Faixa de confiança — degradê suave rosa-100→rosa-50 (não bloco plano) */
-  .confianca {
-    border-block: 1px solid var(--cor-borda);
-    background: linear-gradient(90deg, var(--rosa-100), var(--rosa-50) 50%, var(--rosa-100));
-  }
-  /* Itens centralizados, texto em duas linhas e divisórias verticais entre eles (como na referência). */
-  .confianca__lista {
-    width: min(100% - 2 * var(--espaco-md), 72rem);
-    margin-inline: auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: stretch;
-    padding-block: var(--espaco-md);
-  }
-  .confianca__lista li {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--espaco-xs);
-    flex: 1 1 12rem;
-    padding-inline: var(--espaco-sm);
-    text-align: center;
-    font-weight: 600;
-    font-size: var(--tamanho-pequeno);
-    line-height: 1.35;
-    color: var(--rosa-700);
-  }
-  .confianca__lista li + li { border-left: 1px solid var(--rosa-300); }
-  @media (max-width: 40rem) {
-    .confianca__lista li { flex-basis: 100%; }
-    .confianca__lista li + li { border-left: none; border-top: 1px solid var(--rosa-200); padding-block: var(--espaco-sm); }
-  }
-  .confianca__lista li svg {
-    color: var(--rosa-700);
-    background: var(--degrade-destaque);
-    padding: 0.4rem;
-    border-radius: var(--raio-pill);
-    box-sizing: content-box;
-  }
 
   .catalogo {
     width: min(100% - 2 * var(--espaco-md), 72rem);
