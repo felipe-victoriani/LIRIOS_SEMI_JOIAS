@@ -349,31 +349,26 @@
      position:relative + os dois ::before/::after criam o "glow" desfocado atrás do conteúdo
      (glassmorphism/soft-gradient é tendência atual de site de joalheria — ver pesquisa de mercado);
      substitui o fundo plano por profundidade sem introduzir cor fora da rampa da marca. */
-  /* Hero em largura total: a foto da modelo entra como fundo à direita, e um degradê rosa
-     por cima mantém o texto legível à esquerda. O conteúdo fica alinhado ao container de 72rem. */
+  /* Hero em largura total com a arte inteira como fundo (1280x548, sem recorte): a proporção
+     da seção é a da imagem, e um degradê rosa à esquerda mantém o texto legível sobre o lírio. */
   .hero {
     position: relative;
     isolation: isolate;
     display: flex;
     align-items: center;
-    min-height: min(88svh, 760px);
+    aspect-ratio: 1280 / 548;
     padding-block: var(--espaco-xl);
     padding-inline: max(var(--espaco-md), calc(50% - 36rem + var(--espaco-md)));
     background-color: var(--rosa-50);
-  }
-
-  /* Desktop: a foto ocupa a metade direita como um painel sólido, de borda a borda; só a
-     borda esquerda dela esmaece pro rosa, pra não parecer um recorte seco. */
-  .hero__foto {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    width: 47%;
-    background: url("../assets/img_hero.webp") center 22% / cover no-repeat;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12%);
-    mask-image: linear-gradient(90deg, transparent 0, #000 12%);
-    pointer-events: none;
+    background-image:
+      linear-gradient(90deg,
+        color-mix(in oklch, var(--rosa-50) 85%, transparent) 0%,
+        color-mix(in oklch, var(--rosa-50) 40%, transparent) 45%,
+        transparent 70%),
+      url("../assets/nova_img_hero.jpeg");
+    background-size: 100% 100%, 100% auto;
+    background-position: 0 0, center;
+    background-repeat: no-repeat;
   }
 
   .hero__conteudo { position: relative; z-index: 2; max-width: 34rem; }
@@ -439,22 +434,21 @@
 
   @media (max-width: 54rem) {
     .hero {
-      min-height: auto;
+      aspect-ratio: auto;
       padding-block: var(--espaco-lg);
       padding-inline: var(--espaco-md);
       background-image:
         linear-gradient(180deg,
-          color-mix(in oklch, var(--rosa-50) 74%, transparent),
-          color-mix(in oklch, var(--rosa-50) 62%, transparent)),
-        url("../assets/img_hero.webp");
+          color-mix(in oklch, var(--rosa-50) 60%, transparent),
+          color-mix(in oklch, var(--rosa-50) 48%, transparent)),
+        url("../assets/nova_img_hero.jpeg");
       background-size: 100% 100%, cover;
-      background-position: 0 0, center 20%;
+      background-position: 0 0, 84% center;
     }
     /* Os brilhos já causaram dois bugs de renderização em navegador mobile real (filter e,
        depois, transform animado) — são só enfeite, então no mobile a prioridade é
        confiabilidade: tiram esse elemento de cena em vez de arriscar um terceiro caso. */
     .hero__brilhos { display: none; }
-    .hero__foto { display: none; }
   }
 
   .hero__etiqueta {
@@ -536,8 +530,8 @@
   }
   .confianca__lista li + li { border-left: 1px solid var(--rosa-300); }
   @media (max-width: 40rem) {
-    .confianca__lista li { flex-basis: 100%; border-left: none; }
-    .confianca__lista li + li { border-top: 1px solid var(--rosa-200); padding-block: var(--espaco-sm); }
+    .confianca__lista li { flex-basis: 100%; }
+    .confianca__lista li + li { border-left: none; border-top: 1px solid var(--rosa-200); padding-block: var(--espaco-sm); }
   }
   .confianca__lista li svg {
     color: var(--rosa-700);
@@ -620,6 +614,24 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
     gap: var(--espaco-md);
+  }
+
+  /* Celular: dois cards lado a lado, com a faixa de preço/ação compactada pra caber. */
+  @media (max-width: 40rem) {
+    .catalogo__grade {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--espaco-sm);
+    }
+    .produto-card__corpo { padding: 0.6rem; }
+    .produto-card__nome { font-size: 0.95rem; }
+    .produto-card__preco { font-size: 0.95rem; }
+    .produto-card__rodape {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 0.6rem;
+    }
+    .produto-card__rodape .stepper { justify-content: center; }
+    .produto-card__rodape .botao { width: 100%; }
   }
 
   .catalogo__estado {
