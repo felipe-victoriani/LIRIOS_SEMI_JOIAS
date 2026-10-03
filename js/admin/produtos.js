@@ -28,6 +28,14 @@ const mensagemErroProduto = document.getElementById("mensagem-erro-produto");
 let produtos = [];
 let categorias = [];
 
+// Traduz o erro técnico numa mensagem que ajude quem está usando o painel (ex: sessão expirada no celular).
+function mensagemDeErro(erro) {
+  const texto = `${erro?.code ?? ""} ${erro?.message ?? ""}`;
+  if (/permission_denied/i.test(texto)) return "Sua sessão expirou. Saia do painel e entre de novo.";
+  if (/não é uma imagem/i.test(texto)) return "Não consegui ler essa foto. Tente outra imagem.";
+  return "Não foi possível salvar agora. Tente novamente em instantes.";
+}
+
 function nomeDaCategoria(categoriaId) {
   return categorias.find((categoria) => categoria.id === categoriaId)?.nome ?? "—";
 }
@@ -202,8 +210,9 @@ formularioProduto.addEventListener("submit", async (evento) => {
     await update(ref(db), alteracoes);
     if (arquivo) invalidarFoto(`produtos/${id}`);
     dialogoProduto.close();
-  } catch {
-    mensagemErroProduto.textContent = "Não foi possível salvar agora. Tente novamente em instantes.";
+  } catch (erro) {
+    console.error("Erro ao salvar a peça:", erro);
+    mensagemErroProduto.textContent = mensagemDeErro(erro);
   } finally {
     botaoSalvarProduto.disabled = false;
     botaoSalvarProduto.textContent = "Salvar";
