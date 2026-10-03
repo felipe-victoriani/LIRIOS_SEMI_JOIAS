@@ -32,7 +32,7 @@ let categorias = [];
 function mensagemDeErro(erro) {
   const texto = `${erro?.code ?? ""} ${erro?.message ?? ""}`;
   if (/permission_denied/i.test(texto)) return "Sua sessão expirou. Saia do painel e entre de novo.";
-  if (/não é uma imagem/i.test(texto)) return "Não consegui ler essa foto. Tente outra imagem.";
+  if (/não é uma imagem|grande demais|converter a imagem/i.test(texto)) return "Não consegui preparar essa foto. Tente outra imagem.";
   return "Não foi possível salvar agora. Tente novamente em instantes.";
 }
 
