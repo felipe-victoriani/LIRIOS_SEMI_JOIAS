@@ -1,0 +1,14 @@
+{
+  "rules": {
+    "produtos": {
+      ".read": true,
+      ".write": "auth != null",
+      "$produtoId": {
+        ".validate": "newData.hasChildren(['nome', 'categoria', 'preco'])",
+        "nome": { ".validate": "newData.isString() && newData.val().length > 0" },
+        "categoria": { ".validate": "newData.isString() && newData.val().length > 0" },
+        "preco": { ".validate": "newData.isNumber() && newData.val() > 0" }
+      }
+    }
+  }
+}

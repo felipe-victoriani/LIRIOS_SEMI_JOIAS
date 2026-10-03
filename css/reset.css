@@ -1,0 +1,78 @@
+/* Reset enxuto (baseado em modern-normalize), em @layer próprio pra não brigar com os componentes */
+@layer reset;
+
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  * { margin: 0; }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light dark;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    min-height: 100svh;
+    font-family: var(--fonte-corpo);
+    font-size: var(--tamanho-base);
+    line-height: 1.6;
+    color: var(--cor-texto);
+    background: var(--degrade-fundo, var(--cor-fundo));
+    background-attachment: fixed;
+  }
+
+  img, picture, video, svg { display: block; max-width: 100%; }
+
+  svg { flex-shrink: 0; }
+
+  input, button, textarea, select { font: inherit; color: inherit; }
+
+  button { cursor: pointer; }
+
+  h1, h2, h3, h4 { font-family: var(--fonte-display); line-height: 1.15; text-wrap: balance; }
+
+  p { text-wrap: pretty; }
+
+  a { color: inherit; }
+
+  ul[role="list"], ol[role="list"] { list-style: none; padding: 0; }
+
+  :focus-visible {
+    outline: 2px solid var(--rosa-600);
+    outline-offset: 3px;
+  }
+
+  .somente-leitor-tela {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .pular-para-conteudo {
+    position: fixed;
+    top: -100%;
+    left: var(--espaco-md);
+    z-index: 100;
+    background: var(--rosa-700);
+    color: var(--rosa-50);
+    padding: var(--espaco-xs) var(--espaco-sm);
+    border-radius: var(--raio-sm);
+  }
+
+  .pular-para-conteudo:focus {
+    top: var(--espaco-xs);
+  }
+}

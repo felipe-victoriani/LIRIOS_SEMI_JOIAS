@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Produtos | Lírio Semijoias Admin</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/png" href="../assets/favicon-64.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=Manrope:wght@400;500;600;700&display=swap" />
+
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+</head>
+<body>
+  <header class="admin-cabecalho">
+    <a href="../index.html" class="admin-cabecalho__marca">
+      <img src="../assets/logo.jpeg" alt="Lírio Semijoias" width="32" height="32" />
+      <span>Admin</span>
+    </a>
+    <button type="button" id="botao-sair" class="botao-link">Sair</button>
+  </header>
+
+  <main class="admin-conteudo">
+    <div class="admin-conteudo__cabecalho">
+      <h1>Produtos</h1>
+      <button type="button" id="botao-nova-peca" class="botao botao--primario">Nova peça</button>
+    </div>
+
+    <div class="tabela-produtos-wrapper">
+      <table class="tabela-produtos">
+        <thead>
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Categoria</th>
+            <th scope="col">Preço</th>
+            <th scope="col">Status</th>
+            <th scope="col"><span class="somente-leitor-tela">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody id="corpo-tabela-produtos"></tbody>
+      </table>
+      <p id="estado-tabela-produtos" class="admin-conteudo__estado">Carregando produtos…</p>
+    </div>
+  </main>
+
+  <dialog id="dialogo-produto" class="dialogo-produto">
+    <form id="formulario-produto" novalidate>
+      <h2 id="titulo-dialogo-produto">Nova peça</h2>
+      <input type="hidden" id="campo-produto-id" />
+
+      <div class="campo">
+        <label for="campo-nome">Nome</label>
+        <input type="text" id="campo-nome" name="nome" required />
+      </div>
+
+      <div class="campo-grupo">
+        <div class="campo">
+          <label for="campo-categoria">Categoria</label>
+          <select id="campo-categoria" name="categoria">
+            <option value="Brincos">Brincos</option>
+            <option value="Colares">Colares</option>
+            <option value="Anéis">Anéis</option>
+            <option value="Pulseiras">Pulseiras</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="campo-preco">Preço (R$)</label>
+          <input type="number" id="campo-preco" name="preco" min="0.01" step="0.01" required />
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="campo-descricao">Descrição (opcional)</label>
+        <textarea id="campo-descricao" name="descricao" rows="3"></textarea>
+      </div>
+
+      <div class="campo">
+        <label for="campo-imagem-url">URL da foto (opcional)</label>
+        <input type="url" id="campo-imagem-url" name="imagemUrl" placeholder="https://…" />
+      </div>
+
+      <label class="campo-checkbox">
+        <input type="checkbox" id="campo-ativo" name="ativo" checked />
+        Visível no catálogo
+      </label>
+
+      <p id="mensagem-erro-produto" class="mensagem-erro" role="alert" aria-live="assertive"></p>
+
+      <div class="dialogo-produto__acoes">
+        <button type="button" id="botao-cancelar-produto" class="botao botao--contorno">Cancelar</button>
+        <button type="submit" class="botao botao--primario">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="../js/admin/produtos.js"></script>
+</body>
+</html>

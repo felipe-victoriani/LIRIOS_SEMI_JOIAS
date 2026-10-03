@@ -1,0 +1,786 @@
+@layer base, layout, componentes;
+
+@layer base {
+  .container {
+    width: min(100% - 2 * var(--espaco-md), 72rem);
+    margin-inline: auto;
+  }
+
+  .botao {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espaco-xs);
+    padding: 0.85em 1.6em;
+    border-radius: var(--raio-pill);
+    font-weight: 600;
+    font-size: var(--tamanho-pequeno);
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    border: 1px solid transparent;
+    overflow: hidden;
+    /* isolation cria um contexto de empilhamento próprio: o ::before do brilho (z-index -1)
+       fica entre o fundo e o texto do botão, nunca por cima do texto — sem precisar de <span>. */
+    isolation: isolate;
+    transition: transform var(--duracao-rapida) var(--easing-padrao),
+                background var(--duracao-media) var(--easing-padrao),
+                box-shadow var(--duracao-media) var(--easing-padrao);
+  }
+
+  .botao:hover { transform: translateY(-2px); }
+  .botao:active { transform: translateY(0); }
+
+  /* Botão escuro — degradê vinho (rosa-600→rosa-800), não preto/marrom chapado */
+  .botao--primario {
+    background: var(--degrade-primario);
+    color: var(--rosa-50);
+    box-shadow: 0 1px 2px color-mix(in oklch, var(--rosa-800) 20%, transparent);
+  }
+  .botao--primario:hover { background: var(--degrade-primario-hover); box-shadow: var(--brilho-rosa); }
+
+  /* Brilho que varre o botão no hover — mesmo motivo do shimmer do card, reforça "brilho" da marca */
+  .botao--primario::before,
+  .botao--destaque::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 40%, color-mix(in oklch, var(--branco) 45%, transparent) 50%, transparent 60%);
+    transform: translateX(-120%);
+    transition: transform 600ms var(--easing-padrao);
+  }
+  .botao--primario:hover::before,
+  .botao--destaque:hover::before { transform: translateX(120%); }
+
+  /* Botão de destaque — degradê no tom exato da logo, com texto escuro, pro CTA mais chamativo */
+  .botao--destaque {
+    background: var(--degrade-destaque);
+    color: var(--rosa-800);
+    box-shadow: var(--sombra-suave);
+  }
+  .botao--destaque:hover { background: var(--degrade-destaque-hover); box-shadow: var(--brilho-rosa); }
+
+  .botao--fantasma {
+    background: color-mix(in oklch, var(--branco) 60%, transparent);
+    backdrop-filter: blur(8px);
+    color: var(--rosa-800);
+    border-color: var(--cor-borda);
+  }
+  .botao--fantasma:hover { border-color: var(--rosa-500); background: var(--rosa-100); }
+
+  .botao--contorno {
+    background: transparent;
+    color: var(--rosa-800);
+    border-color: var(--rosa-800);
+  }
+
+  .botao--pequeno { padding: 0.6em 1.1em; font-size: 0.8125rem; }
+  .botao--bloco { width: 100%; }
+
+  .botao--desabilitado {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .botao-link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--rosa-700);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-size: var(--tamanho-pequeno);
+  }
+  .botao-link:hover { color: var(--rosa-800); }
+  .botao-link--perigo { color: var(--rosa-600); }
+
+  .botao-icone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--raio-pill);
+    color: var(--rosa-800);
+  }
+  .botao-icone:hover { background: var(--rosa-200); }
+
+  .pilula {
+    border: 1px solid var(--rosa-200);
+    background: color-mix(in oklch, var(--branco) 70%, var(--rosa-100));
+    color: var(--rosa-800);
+    padding: 0.55em 1.2em;
+    border-radius: var(--raio-pill);
+    font-size: var(--tamanho-pequeno);
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 1px 2px color-mix(in oklch, var(--rosa-800) 6%, transparent);
+    transition: background var(--duracao-rapida) var(--easing-padrao),
+                color var(--duracao-rapida) var(--easing-padrao),
+                box-shadow var(--duracao-rapida) var(--easing-padrao),
+                transform var(--duracao-rapida) var(--easing-padrao);
+  }
+  .pilula:hover { background: var(--rosa-200); transform: translateY(-1px); }
+  .pilula.is-ativa {
+    background: var(--degrade-primario);
+    color: var(--rosa-50);
+    border-color: transparent;
+    box-shadow: 0 4px 14px color-mix(in oklch, var(--rosa-700) 35%, transparent);
+  }
+  .pilula.is-ativa:hover { background: var(--degrade-primario-hover); }
+
+  .stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-xs);
+    border: 1px solid var(--rosa-200);
+    border-radius: var(--raio-pill);
+    padding: 0.2em 0.4em;
+  }
+  .stepper__botao {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: var(--raio-pill);
+    border: none;
+    background: var(--rosa-200);
+    color: var(--rosa-800);
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .stepper__botao:hover { background: var(--rosa-400); }
+  .stepper__valor {
+    min-width: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+  }
+}
+
+@layer layout {
+  .cabecalho {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: color-mix(in oklch, var(--branco) 65%, transparent);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border-bottom: 1px solid transparent;
+    border-image: linear-gradient(90deg, transparent, var(--rosa-300), transparent) 1;
+  }
+
+  .cabecalho__faixa {
+    width: min(100% - 2 * var(--espaco-md), 72rem);
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-md);
+    padding-block: var(--espaco-sm);
+  }
+
+  .cabecalho__marca {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-sm);
+    text-decoration: none;
+  }
+  /* Logo circular (recorte do diamante, mesmo crop do favicon) em vez do quadrado
+     "adesivo" cru — ecoa o avatar redondo que a marca já usa no Instagram. */
+  .cabecalho__logo {
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--branco), 0 0 0 3px var(--rosa-300);
+  }
+  .cabecalho__nome {
+    font-family: var(--fonte-display);
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: var(--rosa-800);
+  }
+  .cabecalho__nome em { font-style: italic; color: var(--rosa-600); }
+
+  .cabecalho__nav ul { display: flex; gap: var(--espaco-md); }
+  .cabecalho__nav a {
+    position: relative;
+    display: inline-block;
+    padding-block: 0.3rem;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--tamanho-pequeno);
+    color: var(--rosa-800);
+  }
+  .cabecalho__nav a:hover { color: var(--rosa-600); }
+  /* Indicador da seção atual (scroll-spy em js/cabecalho.js) — traço em degradê embaixo do link */
+  .cabecalho__nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 100%;
+    bottom: 0;
+    height: 2px;
+    border-radius: var(--raio-pill);
+    background: var(--degrade-destaque-hover);
+    transition: right var(--duracao-media) var(--easing-padrao);
+  }
+  .cabecalho__nav a.is-atual { color: var(--rosa-600); }
+  .cabecalho__nav a.is-atual::after { right: 0; }
+
+  @media (max-width: 54rem) {
+    .cabecalho__nav { display: none; }
+  }
+
+  .cabecalho__acoes { display: flex; align-items: center; gap: var(--espaco-xs); }
+
+  @media (max-width: 30rem) {
+    /* Em telas bem estreitas o ícone do Instagram some do cabeçalho (ele já está no
+       menu hambúrguer) pra sobrar espaço decente de toque pro carrinho e pro menu. */
+    .cabecalho__icone-social { display: none; }
+  }
+
+  /* Instagram com mais destaque no cabeçalho — pedido explícito pra chamar mais atenção:
+     fundo preenchido em degradê (em vez de só um ícone de contorno) + glow + pulso sutil. */
+  .cabecalho__icone-social {
+    position: relative;
+    isolation: isolate;
+    background: var(--degrade-destaque);
+    color: var(--rosa-800);
+    box-shadow: 0 2px 8px color-mix(in oklch, var(--rosa-500) 35%, transparent);
+    transition: transform var(--duracao-rapida) var(--easing-padrao), box-shadow var(--duracao-media) var(--easing-padrao);
+  }
+  .cabecalho__icone-social:hover {
+    background: var(--degrade-destaque-hover);
+    transform: translateY(-2px) scale(1.06);
+    box-shadow: var(--brilho-rosa);
+  }
+  /* Anel que pulsa pra fora e some — chama o olho sem travar interação (aria-hidden, decorativo) */
+  .cabecalho__icone-social::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: var(--raio-pill);
+    background: var(--rosa-400);
+    animation: pulso-instagram 2.4s ease-out infinite;
+  }
+  @keyframes pulso-instagram {
+    0% { opacity: 0.55; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.9); }
+  }
+
+  .botao-carrinho {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--raio-pill);
+    border: none;
+    background: transparent;
+    color: var(--rosa-800);
+  }
+  .botao-carrinho:hover { background: var(--rosa-200); }
+
+  .botao-menu {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--raio-pill);
+    border: none;
+    background: transparent;
+    color: var(--rosa-800);
+  }
+  .botao-menu:hover { background: var(--rosa-200); }
+
+  @media (max-width: 54rem) {
+    .botao-menu { display: inline-flex; }
+  }
+  .botao-carrinho__contador {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    min-width: 1.1rem;
+    height: 1.1rem;
+    padding-inline: 0.2rem;
+    border-radius: var(--raio-pill);
+    background: var(--rosa-500);
+    color: var(--rosa-50);
+    font-size: 0.65rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* HERO — assimétrico, texto + vídeo lado a lado, fugindo do hero centralizado padrão.
+     position:relative + os dois ::before/::after criam o "glow" desfocado atrás do conteúdo
+     (glassmorphism/soft-gradient é tendência atual de site de joalheria — ver pesquisa de mercado);
+     substitui o fundo plano por profundidade sem introduzir cor fora da rampa da marca. */
+  .hero {
+    position: relative;
+    width: min(100% - 2 * var(--espaco-md), 72rem);
+    margin-inline: auto;
+    padding-block: var(--espaco-xl) var(--espaco-lg);
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: var(--espaco-lg);
+    align-items: center;
+    isolation: isolate;
+  }
+
+  .hero::before,
+  .hero::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .hero::before {
+    width: 26rem;
+    height: 26rem;
+    top: -6rem;
+    left: -8rem;
+    background: var(--rosa-300);
+  }
+  .hero::after {
+    width: 22rem;
+    height: 22rem;
+    bottom: -4rem;
+    right: 2rem;
+    background: var(--rosa-200);
+  }
+  /* Terceiro brilho, mais quente/vívido, centralizado atrás do título — reforça o
+     "com brilho" sem recorrer a emoji; é luz e cor, não um sticker. */
+  .hero::before {
+    background: radial-gradient(circle, var(--rosa-300), transparent 70%);
+  }
+
+  /* reset.css já zera toda animação sob prefers-reduced-motion: reduce, então não precisa
+     condicional aqui — só flutua pra quem não pediu movimento reduzido. */
+  .hero__midia { animation: flutuar 7s ease-in-out infinite; }
+  @keyframes flutuar {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Brilhos (sparkles) decorativos — pequenos "diamantes de 4 pontas" que piscam, ecoando
+     o bokeh/sparkle que já aparece no vídeo da logo. Puramente decorativo (aria-hidden). */
+  .hero__brilhos {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .hero__brilho {
+    position: absolute;
+    filter: drop-shadow(0 0 6px color-mix(in oklch, var(--rosa-400) 70%, transparent));
+    animation: brilho-pisca 2.8s ease-in-out infinite;
+  }
+  .hero__brilho--1 { top: 6%;  left: 2%;   color: var(--rosa-400); animation-delay: 0s; }
+  .hero__brilho--2 { top: 72%; left: 34%;  color: var(--branco);   animation-delay: 0.9s; animation-duration: 2.2s; }
+  .hero__brilho--3 { top: 14%; left: 48%;  color: var(--rosa-300); animation-delay: 1.6s; animation-duration: 3.4s; }
+  .hero__brilho--4 { top: 85%; left: 6%;   color: var(--rosa-500); animation-delay: 0.4s; animation-duration: 2.6s; }
+
+  @keyframes brilho-pisca {
+    0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1) rotate(8deg); }
+  }
+
+  @media (max-width: 54rem) {
+    .hero { grid-template-columns: 1fr; padding-block: var(--espaco-lg); }
+    .hero__midia { order: -1; }
+  }
+
+  .hero__etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    font-size: var(--tamanho-pequeno);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rosa-600);
+    margin-bottom: var(--espaco-sm);
+  }
+  /* Pequeno traço decorativo antes do rótulo — detalhe editorial, sem precisar de ícone */
+  .hero__etiqueta::before {
+    content: "";
+    display: inline-block;
+    width: 1.75rem;
+    height: 2px;
+    border-radius: var(--raio-pill);
+    background: linear-gradient(90deg, var(--rosa-500), transparent);
+  }
+
+  .hero__titulo {
+    font-size: var(--tamanho-h1);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: var(--espaco-sm);
+    color: var(--rosa-800);
+  }
+  .hero__titulo em {
+    /* Degradê rosa-700→rosa-500: os dois extremos ficam ≥3.28:1 sobre o fundo (texto
+       grande de título, limiar AA é 3:1) — rosa-400 sozinho (2.28:1) reprovaria aqui. */
+    font-style: italic;
+    background: linear-gradient(100deg, var(--rosa-700), var(--rosa-500));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .hero__texto {
+    color: var(--cor-texto-suave);
+    max-width: 38ch;
+    line-height: 1.7;
+    margin-bottom: var(--espaco-md);
+  }
+
+  .hero__cta { display: flex; flex-wrap: wrap; gap: var(--espaco-sm); }
+
+  .hero__midia {
+    /* 16/9 é a proporção real do vídeo (1280x720) — um quadro 4:5 cortava o texto
+       "LIRIO SemiJoias" nas laterais. Com a proporção batendo, "cover" encaixa sem cortar nada. */
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--raio-lg);
+    overflow: hidden;
+    box-shadow: var(--sombra-elevada), var(--brilho-rosa);
+    background: var(--rosa-400);
+  }
+  .hero__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Faixa de confiança — degradê suave rosa-100→rosa-50 (não bloco plano) */
+  .confianca {
+    border-block: 1px solid var(--cor-borda);
+    background: linear-gradient(90deg, var(--rosa-100), var(--rosa-50) 50%, var(--rosa-100));
+  }
+  .confianca__lista {
+    width: min(100% - 2 * var(--espaco-md), 72rem);
+    margin-inline: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-lg);
+    padding-block: var(--espaco-md);
+  }
+  .confianca__lista li {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-sm);
+    font-weight: 600;
+    font-size: var(--tamanho-pequeno);
+    color: var(--rosa-700);
+  }
+  .confianca__lista li svg {
+    color: var(--rosa-700);
+    background: var(--degrade-destaque);
+    padding: 0.4rem;
+    border-radius: var(--raio-pill);
+    box-sizing: content-box;
+  }
+
+  .catalogo {
+    width: min(100% - 2 * var(--espaco-md), 72rem);
+    margin-inline: auto;
+    padding-block: var(--espaco-xl);
+  }
+  .catalogo__cabecalho { margin-bottom: var(--espaco-md); max-width: 46ch; }
+  .catalogo__cabecalho h2 { font-size: var(--tamanho-h2); margin-bottom: var(--espaco-xs); color: var(--rosa-800); }
+  .catalogo__cabecalho p { color: var(--cor-texto-suave); }
+
+  .catalogo__aviso {
+    display: inline-block;
+    background: var(--rosa-200);
+    color: var(--rosa-700);
+    font-size: var(--tamanho-pequeno);
+    font-weight: 600;
+    padding: 0.5em 1em;
+    border-radius: var(--raio-sm);
+    margin-bottom: var(--espaco-md);
+  }
+
+  .catalogo__filtros {
+    display: flex;
+    gap: var(--espaco-xs);
+    overflow-x: auto;
+    padding-bottom: var(--espaco-xs);
+    margin-bottom: var(--espaco-md);
+  }
+
+  .catalogo__grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: var(--espaco-md);
+  }
+
+  .catalogo__estado {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--cor-texto-suave);
+    padding-block: var(--espaco-lg);
+  }
+
+  .sobre {
+    width: min(100% - 2 * var(--espaco-md), 72rem);
+    margin-inline: auto;
+    padding-block: var(--espaco-xl);
+  }
+  .sobre__texto h2 { font-size: var(--tamanho-h2); margin-bottom: var(--espaco-sm); color: var(--rosa-800); }
+  .sobre__texto p { color: var(--cor-texto-suave); max-width: 60ch; margin-bottom: var(--espaco-sm); }
+
+  .rodape {
+    border-top: 1px solid var(--cor-borda);
+    background: var(--rosa-100);
+    padding-block: var(--espaco-md);
+  }
+  .rodape__faixa {
+    width: min(100% - 2 * var(--espaco-md), 72rem);
+    margin-inline: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-sm);
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--tamanho-pequeno);
+    color: var(--rosa-700);
+  }
+  .rodape__marca {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-xs);
+    text-decoration: none;
+    font-weight: 700;
+    color: var(--rosa-800);
+  }
+  .rodape__marca img { border-radius: var(--raio-sm); }
+}
+
+@layer componentes {
+  /* Menu mobile — Popover API nativa, mesma lógica do painel do carrinho (ver nota ali sobre
+     nunca declarar "display" fora de :popover-open, senão o fechado some o "display:none" nativo). */
+  .menu-mobile {
+    /* [popover] vem do navegador com "width/height: fit-content" por padrão — sem sobrescrever
+       aqui, left:0/right:0 não esticam a caixa e ela fica do tamanho do conteúdo, colada à
+       esquerda (foi exatamente o que aconteceu até corrigir isso). */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-height: 85vh;
+    margin: 0;
+    border: none;
+    border-bottom: 1px solid var(--rosa-200);
+    background: color-mix(in oklch, var(--branco) 88%, var(--rosa-50));
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    padding: var(--espaco-lg) var(--espaco-md) var(--espaco-md);
+    box-shadow: var(--sombra-elevada);
+    transform: translateY(-100%);
+    transition: transform var(--duracao-media) var(--easing-padrao), display var(--duracao-media) allow-discrete, overlay var(--duracao-media) allow-discrete;
+  }
+  .menu-mobile::backdrop {
+    background: color-mix(in oklch, var(--rosa-800) 35%, transparent);
+  }
+  .menu-mobile:popover-open {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-md);
+    transform: translateY(0);
+  }
+  @starting-style {
+    .menu-mobile:popover-open { transform: translateY(-100%); }
+  }
+  .menu-mobile nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .menu-mobile nav a {
+    display: block;
+    padding: 0.85em var(--espaco-xs);
+    border-radius: var(--raio-sm);
+    text-decoration: none;
+    font-family: var(--fonte-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--rosa-800);
+  }
+  .menu-mobile nav a:hover,
+  .menu-mobile nav a.is-atual { background: var(--rosa-100); color: var(--rosa-700); }
+  .menu-mobile__acoes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-sm);
+    padding-top: var(--espaco-sm);
+    border-top: 1px solid var(--rosa-200);
+  }
+
+  .produto-card {
+    background: var(--degrade-superficie);
+    border: 1px solid var(--rosa-200);
+    border-radius: var(--raio-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow var(--duracao-media) var(--easing-padrao), transform var(--duracao-media) var(--easing-padrao), border-color var(--duracao-media) var(--easing-padrao);
+  }
+  .produto-card:hover {
+    box-shadow: var(--brilho-rosa);
+    transform: translateY(-4px);
+    border-color: var(--rosa-400);
+  }
+
+  .produto-card__imagem {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+  .produto-card__imagem--placeholder {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espaco-xs);
+    background: linear-gradient(155deg, var(--rosa-300), var(--rosa-100));
+    color: var(--rosa-700);
+    overflow: hidden;
+  }
+  /* Brilho diagonal que varre o placeholder no hover — reforça "realçando com brilho" sem emoji/sticker */
+  .produto-card__imagem--placeholder::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 40%, color-mix(in oklch, var(--branco) 65%, transparent) 50%, transparent 60%);
+    transform: translateX(-120%);
+    transition: transform 700ms var(--easing-padrao);
+  }
+  .produto-card:hover .produto-card__imagem--placeholder::after { transform: translateX(120%); }
+  .produto-card__imagem--placeholder span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--rosa-700);
+  }
+
+  .produto-card__corpo { padding: var(--espaco-sm); flex: 1; }
+  .produto-card__categoria {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--rosa-600);
+    margin-bottom: 0.2rem;
+  }
+  .produto-card__nome { font-size: 1.05rem; margin-bottom: 0.3rem; color: var(--rosa-800); }
+  .produto-card__preco { font-weight: 700; color: var(--rosa-700); }
+
+  .produto-card__rodape {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-xs);
+    padding: var(--espaco-sm);
+    border-top: 1px solid var(--rosa-200);
+  }
+
+  /* Painel do carrinho — Popover API nativa, sem JS pra abrir/fechar */
+  .painel-carrinho {
+    /* Sem "display" aqui de propósito: o padrão fechado precisa continuar usando o
+       "display: none" nativo do navegador pra [popover] — declarar display aqui
+       (mesmo "none") sobrescreveria a regra do user-agent, já que CSS de autor
+       sempre vence CSS de user-agent, e o painel ficaria visível sempre. */
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: auto;
+    right: 0;
+    left: auto;
+    width: min(26rem, 100vw);
+    height: 100%;
+    margin: 0;
+    border: none;
+    border-left: 1px solid color-mix(in oklch, var(--branco) 40%, var(--rosa-200));
+    background: color-mix(in oklch, var(--branco) 82%, var(--rosa-50));
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    color: var(--cor-texto);
+    padding: var(--espaco-md);
+    box-shadow: -16px 0 48px color-mix(in oklch, var(--rosa-800) 14%, transparent);
+    transition: transform var(--duracao-media) var(--easing-padrao), display var(--duracao-media) allow-discrete, overlay var(--duracao-media) allow-discrete;
+    transform: translateX(100%);
+  }
+
+  .painel-carrinho::backdrop {
+    background: color-mix(in oklch, var(--rosa-800) 40%, transparent);
+    backdrop-filter: blur(2px);
+  }
+
+  .painel-carrinho:popover-open {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-md);
+    transform: translateX(0);
+  }
+
+  @starting-style {
+    .painel-carrinho:popover-open { transform: translateX(100%); }
+  }
+
+  .painel-carrinho__cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .painel-carrinho__cabecalho h2 { color: var(--rosa-800); }
+  .botao-fechar {
+    background: none;
+    border: none;
+    color: var(--rosa-800);
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--raio-pill);
+  }
+  .botao-fechar:hover { background: var(--rosa-200); }
+
+  .painel-carrinho__itens { flex: 1; overflow-y: auto; }
+  .painel-carrinho__vazio { color: var(--cor-texto-suave); text-align: center; padding-block: var(--espaco-lg); }
+
+  .carrinho-item__lista { display: flex; flex-direction: column; gap: var(--espaco-sm); }
+  .carrinho-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-sm);
+    padding-bottom: var(--espaco-sm);
+    border-bottom: 1px solid var(--rosa-200);
+  }
+  .carrinho-item__nome { font-weight: 600; font-size: 0.95rem; color: var(--rosa-800); }
+  .carrinho-item__preco { color: var(--cor-texto-suave); font-size: 0.85rem; }
+  .carrinho-item__controles { display: flex; align-items: center; gap: var(--espaco-xs); }
+  .carrinho-item__remover {
+    background: none;
+    border: none;
+    color: var(--rosa-700);
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: var(--raio-pill);
+  }
+  .carrinho-item__remover:hover { background: var(--rosa-200); color: var(--rosa-600); }
+
+  .painel-carrinho__rodape { display: flex; flex-direction: column; gap: var(--espaco-sm); }
+  .painel-carrinho__subtotal {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--rosa-800);
+  }
+}

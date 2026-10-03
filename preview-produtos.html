@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Preview — Cards de produto | Lírio Semijoias</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <!--
+    Página só pra visualizar o design do card de produto com dados de exemplo.
+    Não faz parte do site publicado (não tem link em nenhum menu) e não busca nada
+    do Firebase — é puro HTML/CSS estático, usando as mesmas classes do catálogo real
+    (css/style.css) pra o preview ficar fiel ao que aparece em produção.
+    Pode apagar este arquivo quando não precisar mais comparar variações de layout.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" />
+
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Só nesta página de preview: moldura pra explicar cada variação lado a lado. */
+    .preview-secao { width: min(100% - 2 * var(--espaco-md), 72rem); margin-inline: auto; padding-block: var(--espaco-lg); }
+    .preview-secao h2 { font-size: var(--tamanho-h3); color: var(--rosa-800); margin-bottom: var(--espaco-xs); }
+    .preview-secao p { color: var(--cor-texto-suave); margin-bottom: var(--espaco-md); max-width: 60ch; }
+    .preview-nota { background: var(--rosa-100); border: 1px dashed var(--rosa-300); border-radius: var(--raio-md); padding: var(--espaco-md); margin: var(--espaco-md) auto; width: min(100% - 2 * var(--espaco-md), 72rem); color: var(--rosa-700); font-size: var(--tamanho-pequeno); }
+    .preview-etiqueta { margin: 0; }
+    .preview-paleta { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .preview-swatch {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      border: 1px solid var(--rosa-200);
+    }
+    .preview-swatch--50  { background: var(--rosa-50);  color: var(--rosa-800); }
+    .preview-swatch--100 { background: var(--rosa-100); color: var(--rosa-800); border-color: transparent; }
+    .preview-swatch--200 { background: var(--rosa-200); color: var(--rosa-800); border-color: transparent; }
+    .preview-swatch--300 { background: var(--rosa-300); color: var(--rosa-800); border-color: transparent; }
+    .preview-swatch--400 { background: var(--rosa-400); color: var(--rosa-800); border-color: transparent; }
+    .preview-swatch--500 { background: var(--rosa-500); color: var(--rosa-50); border-color: transparent; }
+    .preview-swatch--600 { background: var(--rosa-600); color: var(--rosa-50); border-color: transparent; }
+    .preview-swatch--700 { background: var(--rosa-700); color: var(--rosa-50); border-color: transparent; }
+    .preview-swatch--800 { background: var(--rosa-800); color: var(--rosa-50); border-color: transparent; }
+  </style>
+</head>
+<body>
+  <header class="cabecalho">
+    <div class="cabecalho__faixa">
+      <a href="index.html" class="cabecalho__marca">
+        <img src="assets/logo.jpeg" alt="Lírio Semijoias" width="44" height="44" class="cabecalho__logo" />
+        <span class="cabecalho__nome">Lírio <em>Semijoias</em></span>
+      </a>
+      <span class="hero__etiqueta preview-etiqueta">Preview de cards — não é uma página do site</span>
+    </div>
+  </header>
+
+  <div class="preview-nota">
+    Esta página existe só pra você comparar os cards de produto com dados de exemplo (preço, nome, com/sem
+    foto). O catálogo de verdade (<code>index.html</code>) continua puxando os produtos reais do Firebase —
+    nada aqui é salvo ou publicado. Dá pra apagar <code>preview-produtos.html</code> quando terminar de revisar.
+  </div>
+
+  <main>
+    <section class="preview-secao">
+      <h2>Com filtro de categoria (igual ao catálogo real)</h2>
+      <p>É assim que a grade aparece com a pílula de categoria ativa e os cards lado a lado.</p>
+
+      <div class="catalogo__filtros" role="group" aria-label="Filtrar por categoria">
+        <button type="button" class="pilula is-ativa">Todas</button>
+        <button type="button" class="pilula">Brincos</button>
+        <button type="button" class="pilula">Colares</button>
+        <button type="button" class="pilula">Anéis</button>
+        <button type="button" class="pilula">Pulseiras</button>
+      </div>
+
+      <div class="catalogo__grade">
+        <!-- Card sem foto (imagemUrl vazio) — placeholder com o diamante da marca -->
+        <article class="produto-card">
+          <div class="produto-card__imagem produto-card__imagem--placeholder">
+            <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><path d="M24 6l9 9-9 27-9-27 9-9Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M15 15h18M12 15l12 27M36 15 24 42" stroke="currentColor" stroke-width="1.2"/></svg>
+            <span>Foto em breve</span>
+          </div>
+          <div class="produto-card__corpo">
+            <p class="produto-card__categoria">Brincos</p>
+            <h3 class="produto-card__nome">Brinco Gota Dourado</h3>
+            <p class="produto-card__preco">R$ 49,90</p>
+          </div>
+          <div class="produto-card__rodape">
+            <div class="stepper">
+              <button type="button" class="stepper__botao" aria-label="Diminuir quantidade">−</button>
+              <span class="stepper__valor">1</span>
+              <button type="button" class="stepper__botao" aria-label="Aumentar quantidade">+</button>
+            </div>
+            <button type="button" class="botao botao--primario botao--pequeno">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Card com foto real (imagemUrl preenchido no admin) -->
+        <article class="produto-card">
+          <img
+            class="produto-card__imagem"
+            src="assets/insta.png"
+            alt="Exemplo de foto de produto"
+            width="320" height="320" />
+          <div class="produto-card__corpo">
+            <p class="produto-card__categoria">Colares</p>
+            <h3 class="produto-card__nome">Colar Lírio Delicado</h3>
+            <p class="produto-card__preco">R$ 129,90</p>
+          </div>
+          <div class="produto-card__rodape">
+            <div class="stepper">
+              <button type="button" class="stepper__botao" aria-label="Diminuir quantidade">−</button>
+              <span class="stepper__valor">2</span>
+              <button type="button" class="stepper__botao" aria-label="Aumentar quantidade">+</button>
+            </div>
+            <button type="button" class="botao botao--primario botao--pequeno">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Nome bem longo, pra ver se quebra a linha direito -->
+        <article class="produto-card">
+          <div class="produto-card__imagem produto-card__imagem--placeholder">
+            <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><path d="M24 6l9 9-9 27-9-27 9-9Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M15 15h18M12 15l12 27M36 15 24 42" stroke="currentColor" stroke-width="1.2"/></svg>
+            <span>Foto em breve</span>
+          </div>
+          <div class="produto-card__corpo">
+            <p class="produto-card__categoria">Anéis</p>
+            <h3 class="produto-card__nome">Anel Solitário Banhado a Ouro 18k</h3>
+            <p class="produto-card__preco">R$ 89,00</p>
+          </div>
+          <div class="produto-card__rodape">
+            <div class="stepper">
+              <button type="button" class="stepper__botao" aria-label="Diminuir quantidade">−</button>
+              <span class="stepper__valor">1</span>
+              <button type="button" class="stepper__botao" aria-label="Aumentar quantidade">+</button>
+            </div>
+            <button type="button" class="botao botao--primario botao--pequeno">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Preço mais alto, categoria Pulseiras -->
+        <article class="produto-card">
+          <div class="produto-card__imagem produto-card__imagem--placeholder">
+            <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><path d="M24 6l9 9-9 27-9-27 9-9Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M15 15h18M12 15l12 27M36 15 24 42" stroke="currentColor" stroke-width="1.2"/></svg>
+            <span>Foto em breve</span>
+          </div>
+          <div class="produto-card__corpo">
+            <p class="produto-card__categoria">Pulseiras</p>
+            <h3 class="produto-card__nome">Pulseira Elos Finos</h3>
+            <p class="produto-card__preco">R$ 159,90</p>
+          </div>
+          <div class="produto-card__rodape">
+            <div class="stepper">
+              <button type="button" class="stepper__botao" aria-label="Diminuir quantidade">−</button>
+              <span class="stepper__valor">1</span>
+              <button type="button" class="stepper__botao" aria-label="Aumentar quantidade">+</button>
+            </div>
+            <button type="button" class="botao botao--primario botao--pequeno">Adicionar</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="preview-secao">
+      <h2>Paleta aplicada</h2>
+      <p>Rampa de rosa usada em todo o site, derivada do tom exato da logo (rosa-400).</p>
+      <div class="preview-paleta">
+        <div class="preview-swatch preview-swatch--50">50</div>
+        <div class="preview-swatch preview-swatch--100">100</div>
+        <div class="preview-swatch preview-swatch--200">200</div>
+        <div class="preview-swatch preview-swatch--300">300</div>
+        <div class="preview-swatch preview-swatch--400">400</div>
+        <div class="preview-swatch preview-swatch--500">500</div>
+        <div class="preview-swatch preview-swatch--600">600</div>
+        <div class="preview-swatch preview-swatch--700">700</div>
+        <div class="preview-swatch preview-swatch--800">800</div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

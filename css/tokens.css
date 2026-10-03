@@ -1,0 +1,107 @@
+/* Tokens de marca Lírio Semijoias — rampa monocromática de rosa derivada do tom real
+   da logo (assets/logo.jpeg, #ED8798 amostrado = rosa-400 abaixo). Mesmo matiz (hue ~8-10)
+   do claro ao escuro, só variando luminosidade/croma — sem cor estranha à marca. */
+@layer tokens;
+
+@layer tokens {
+  :root {
+    /* Rampa de rosa — 50 (quase branco) a 900 (vinho quase preto), todas no mesmo matiz da
+       logo. Versão mais forte/saturada (pedido: "escurecer um pouco, rosa mais forte") —
+       só o rosa-400 fica fixo, é o tom exato amostrado do fundo da logo (não mexer nele). */
+    --rosa-50:  oklch(96%   0.016 8);     /* #FCEEF0 — fundo da página */
+    --rosa-100: oklch(92%   0.032 8);     /* #F9DCE0 — fundo de seção/card alternado */
+    --rosa-200: oklch(86%   0.058 8.5);   /* #F4C2C9 — bordas, tags, hover suave */
+    --rosa-300: oklch(78%   0.095 9);     /* #ED9EAB — destaques decorativos claros */
+    --rosa-400: oklch(73.75% 0.1254 9.9); /* #ED8798 — tom exato amostrado da logo (fixo) */
+    --rosa-500: oklch(60%   0.145 7);     /* #C55571 — hover de botão, ícone de destaque */
+    --rosa-600: oklch(48%   0.135 7.5);   /* #993550 — texto de acento, botão secundário */
+    --rosa-700: oklch(36%   0.110 8);     /* #6A1D32 — texto suave, botão primário */
+    --rosa-800: oklch(23%   0.075 10);    /* #380815 — texto principal, superfícies escuras */
+    --rosa-900: oklch(14%   0.040 11);    /* #160306 — fundo no modo escuro */
+
+    --branco: oklch(100% 0 0);
+
+    /* Contraste validado: rosa-800 sobre rosa-50/100/200/300 (8.3 a 15.3:1), branco sobre
+       rosa-600/700/800 (7 a 17.3:1), rosa-700 sobre rosa-100/200/300 (5.5 a 8.9:1).
+       rosa-400/500 continuam de contraste baixo — usar só decorativo, nunca como texto. */
+
+    --cor-fundo: var(--rosa-50);
+    --cor-texto: var(--rosa-800);
+    --cor-texto-suave: var(--rosa-700);
+    --cor-superficie: var(--branco);
+    --cor-borda: color-mix(in oklch, var(--rosa-800) 14%, transparent);
+
+    /* Tipografia — serifada editorial (Fraunces) ecoa o "LIRIO" da logo; Manrope no corpo pela legibilidade */
+    --fonte-display: "Fraunces", "Georgia", serif;
+    --fonte-corpo: "Manrope", "Segoe UI", sans-serif;
+
+    --tamanho-base: clamp(1rem, 0.94rem + 0.3vw, 1.125rem);
+    --tamanho-h1: clamp(2.25rem, 1.8rem + 2.2vw, 4rem);
+    --tamanho-h2: clamp(1.75rem, 1.5rem + 1.2vw, 2.75rem);
+    --tamanho-h3: clamp(1.25rem, 1.15rem + 0.5vw, 1.625rem);
+    --tamanho-pequeno: clamp(0.8125rem, 0.8rem + 0.1vw, 0.875rem);
+
+    /* Espaçamento fluido */
+    --espaco-xs: clamp(0.5rem, 0.46rem + 0.2vw, 0.625rem);
+    --espaco-sm: clamp(0.75rem, 0.7rem + 0.25vw, 1rem);
+    --espaco-md: clamp(1.25rem, 1.1rem + 0.7vw, 1.75rem);
+    --espaco-lg: clamp(2rem, 1.6rem + 2vw, 3.5rem);
+    --espaco-xl: clamp(3rem, 2.2rem + 4vw, 6rem);
+
+    /* Raios com propósito: pequeno em controles, médio em cards, pill em tags/botões */
+    --raio-sm: 6px;
+    --raio-md: 16px;
+    --raio-lg: 28px;
+    --raio-pill: 999px;
+
+    --sombra-suave: 0 1px 2px color-mix(in oklch, var(--rosa-800) 8%, transparent),
+                     0 8px 24px color-mix(in oklch, var(--rosa-800) 10%, transparent);
+    --sombra-elevada: 0 4px 10px color-mix(in oklch, var(--rosa-800) 12%, transparent),
+                       0 20px 48px color-mix(in oklch, var(--rosa-800) 18%, transparent);
+    /* Sombra com "glow" colorido — pro hover de card/botão ganhar profundidade com a cor da marca,
+       em vez da sombra cinza genérica (o pedido era "menos cor sólida/plana, mais elegante"). */
+    --brilho-rosa: 0 12px 28px color-mix(in oklch, var(--rosa-500) 30%, transparent),
+                    0 2px 8px color-mix(in oklch, var(--rosa-800) 10%, transparent);
+
+    /* Degradês — substituem preenchimentos sólidos em botão/superfície por transição suave
+       dentro da própria rampa de rosa (continua "paleta igual à logo", só com profundidade). */
+    --degrade-primario: linear-gradient(135deg, var(--rosa-600), var(--rosa-800));
+    --degrade-primario-hover: linear-gradient(135deg, var(--rosa-500), var(--rosa-700));
+    --degrade-destaque: linear-gradient(135deg, var(--rosa-300), var(--rosa-500));
+    --degrade-destaque-hover: linear-gradient(135deg, var(--rosa-400), var(--rosa-600));
+    --degrade-superficie: linear-gradient(175deg, var(--branco), var(--rosa-50));
+    --degrade-fundo: radial-gradient(ellipse 80% 60% at 15% -10%, var(--rosa-200), transparent 60%),
+                      radial-gradient(ellipse 70% 50% at 100% 0%, var(--rosa-100), transparent 55%),
+                      var(--rosa-50);
+
+    --duracao-rapida: 160ms;
+    --duracao-media: 320ms;
+    --easing-padrao: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-tema="claro"]) {
+      --cor-fundo: var(--rosa-900);
+      --cor-texto: var(--rosa-100);
+      --cor-texto-suave: var(--rosa-300);
+      --cor-superficie: oklch(22% 0.04 10);
+      --cor-borda: color-mix(in oklch, var(--rosa-100) 16%, transparent);
+      --degrade-superficie: linear-gradient(175deg, oklch(24% 0.045 10), var(--rosa-900));
+      --degrade-fundo: radial-gradient(ellipse 80% 60% at 15% -10%, oklch(24% 0.05 9), transparent 60%),
+                        radial-gradient(ellipse 70% 50% at 100% 0%, oklch(21% 0.045 9), transparent 55%),
+                        var(--rosa-900);
+    }
+  }
+
+  :root[data-tema="escuro"] {
+    --cor-fundo: var(--rosa-900);
+    --cor-texto: var(--rosa-100);
+    --cor-texto-suave: var(--rosa-300);
+    --cor-superficie: oklch(22% 0.04 10);
+    --cor-borda: color-mix(in oklch, var(--rosa-100) 16%, transparent);
+    --degrade-superficie: linear-gradient(175deg, oklch(24% 0.045 10), var(--rosa-900));
+    --degrade-fundo: radial-gradient(ellipse 80% 60% at 15% -10%, oklch(24% 0.05 9), transparent 60%),
+                      radial-gradient(ellipse 70% 50% at 100% 0%, oklch(21% 0.045 9), transparent 55%),
+                      var(--rosa-900);
+  }
+}

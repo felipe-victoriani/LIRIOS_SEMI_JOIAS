@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lírio Semijoias | Semijoias em Campo Grande/MS</title>
+  <meta name="description" content="Lírio Semijoias — peças que realçam sua essência com brilho. Semijoias com 6 meses de garantia e entrega em Campo Grande/MS. Monte sua sacola e finalize pelo WhatsApp." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Lírio Semijoias" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:title" content="Lírio Semijoias | Realçando sua essência com brilho" />
+  <meta property="og:description" content="Semijoias com 6 meses de garantia e entrega em Campo Grande/MS. Monte sua sacola e finalize o pedido pelo WhatsApp." />
+  <meta property="og:url" content="https://www.liriosemijoias.com.br/" />
+  <meta property="og:image" content="https://www.liriosemijoias.com.br/assets/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Logo Lírio Semijoias em fundo rosa, com diamante ilustrado na letra O" />
+
+  <!-- Twitter/X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Lírio Semijoias | Realçando sua essência com brilho" />
+  <meta name="twitter:description" content="Semijoias com 6 meses de garantia e entrega em Campo Grande/MS." />
+  <meta name="twitter:image" content="https://www.liriosemijoias.com.br/assets/og-image.jpg" />
+
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png" />
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png" />
+  <link rel="apple-touch-icon" href="assets/favicon-512.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" />
+
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <a class="pular-para-conteudo" href="#conteudo-principal">Pular para o conteúdo</a>
+
+  <header class="cabecalho" id="topo">
+    <div class="cabecalho__faixa">
+      <a href="#topo" class="cabecalho__marca">
+        <img src="assets/favicon-512.png" alt="" width="40" height="40" class="cabecalho__logo" />
+        <span class="cabecalho__nome">Lírio <em>Semijoias</em></span>
+      </a>
+
+      <nav class="cabecalho__nav" aria-label="Principal">
+        <ul role="list">
+          <li><a href="#catalogo" data-secao="catalogo">Catálogo</a></li>
+          <li><a href="#sobre" data-secao="sobre">Sobre</a></li>
+        </ul>
+      </nav>
+
+      <div class="cabecalho__acoes">
+        <a class="botao-icone cabecalho__icone-social" href="https://www.instagram.com/lirio.semijoiasms" target="_blank" rel="noopener" aria-label="Lírio Semijoias no Instagram">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg>
+        </a>
+        <button type="button" class="botao-carrinho" popovertarget="painel-carrinho" aria-haspopup="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 8h12l-1.2 11.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span class="somente-leitor-tela">Abrir sacola</span>
+          <span class="botao-carrinho__contador" id="contador-carrinho" aria-hidden="true">0</span>
+        </button>
+        <button type="button" class="botao-menu" popovertarget="menu-mobile" aria-haspopup="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="somente-leitor-tela">Abrir menu</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div id="menu-mobile" class="menu-mobile" popover>
+    <nav aria-label="Menu principal">
+      <ul role="list">
+        <li><a href="#catalogo" data-secao="catalogo">Catálogo</a></li>
+        <li><a href="#sobre" data-secao="sobre">Sobre</a></li>
+      </ul>
+    </nav>
+    <div class="menu-mobile__acoes">
+      <a class="botao botao--primario botao--bloco" href="https://api.whatsapp.com/send?phone=5567981884764&text=Oi%2C%20vim%20pelo%20site%20e%20queria%20saber%20mais%20sobre%20as%20semijoias%20da%20L%C3%ADrio!" target="_blank" rel="noopener">Falar no WhatsApp</a>
+      <a class="botao botao--contorno botao--bloco" href="https://www.instagram.com/lirio.semijoiasms" target="_blank" rel="noopener">@lirio.semijoiasms</a>
+    </div>
+  </div>
+
+  <main id="conteudo-principal">
+    <section class="hero">
+      <div class="hero__brilhos" aria-hidden="true">
+        <svg class="hero__brilho hero__brilho--1" viewBox="0 0 24 24" width="18" height="18"><path d="M12 2c0 4-1 7-2.5 8.5S5 12 2 12c3 0 7 1 8.5 2.5S12 20 12 22c0-4 1-7 2.5-8.5S19 12 22 12c-3 0-7-1-8.5-2.5S12 6 12 2Z" fill="currentColor"/></svg>
+        <svg class="hero__brilho hero__brilho--2" viewBox="0 0 24 24" width="12" height="12"><path d="M12 2c0 4-1 7-2.5 8.5S5 12 2 12c3 0 7 1 8.5 2.5S12 20 12 22c0-4 1-7 2.5-8.5S19 12 22 12c-3 0-7-1-8.5-2.5S12 6 12 2Z" fill="currentColor"/></svg>
+        <svg class="hero__brilho hero__brilho--3" viewBox="0 0 24 24" width="22" height="22"><path d="M12 2c0 4-1 7-2.5 8.5S5 12 2 12c3 0 7 1 8.5 2.5S12 20 12 22c0-4 1-7 2.5-8.5S19 12 22 12c-3 0-7-1-8.5-2.5S12 6 12 2Z" fill="currentColor"/></svg>
+        <svg class="hero__brilho hero__brilho--4" viewBox="0 0 24 24" width="14" height="14"><path d="M12 2c0 4-1 7-2.5 8.5S5 12 2 12c3 0 7 1 8.5 2.5S12 20 12 22c0-4 1-7 2.5-8.5S19 12 22 12c-3 0-7-1-8.5-2.5S12 6 12 2Z" fill="currentColor"/></svg>
+      </div>
+      <div class="hero__conteudo">
+        <p class="hero__etiqueta">Campo Grande · MS</p>
+        <h1 class="hero__titulo">Realçando sua <em>essência</em> com brilho</h1>
+        <p class="hero__texto">Semijoias folheadas com acabamento fino, pensadas pra durar no dia a dia. 6 meses de garantia em toda peça e entrega combinada direto com você.</p>
+        <div class="hero__cta">
+          <a class="botao botao--primario" href="#catalogo">Ver catálogo</a>
+        </div>
+      </div>
+      <div class="hero__midia">
+        <video
+          class="hero__video"
+          autoplay muted loop playsinline
+          poster="assets/video-poster.jpg"
+          aria-label="Animação da logo Lírio Semijoias">
+          <source src="assets/video_logo.mp4" type="video/mp4" />
+        </video>
+      </div>
+    </section>
+
+    <section class="confianca" aria-label="Diferenciais">
+      <ul role="list" class="confianca__lista">
+        <li>
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 7.8-7 10-4-2.2-7-5.5-7-10V6l7-3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>6 meses de garantia</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 21s-7-5.1-7-11a7 7 0 0 1 14 0c0 5.9-7 11-7 11Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span>Entregas em Campo Grande/MS</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 12a8 8 0 1 1 3 6.3L4 20l1.4-3.4A7.96 7.96 0 0 1 4 12Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span>Atendimento direto pelo WhatsApp</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="catalogo" id="catalogo">
+      <div class="catalogo__cabecalho">
+        <h2>Catálogo</h2>
+        <p>Escolha as peças, monte sua sacola e finalize o pedido com a gente.</p>
+      </div>
+
+      <p id="aviso-exemplo-catalogo" class="catalogo__aviso" hidden>
+        Mostrando peças de exemplo pra ilustrar o catálogo — cadastre as suas no painel administrativo.
+      </p>
+
+      <div class="catalogo__filtros" role="group" aria-label="Filtrar por categoria" id="filtros-categoria">
+        <button type="button" class="pilula is-ativa" data-categoria="Todas" aria-pressed="true">Todas</button>
+        <button type="button" class="pilula" data-categoria="Brincos" aria-pressed="false">Brincos</button>
+        <button type="button" class="pilula" data-categoria="Colares" aria-pressed="false">Colares</button>
+        <button type="button" class="pilula" data-categoria="Anéis" aria-pressed="false">Anéis</button>
+        <button type="button" class="pilula" data-categoria="Pulseiras" aria-pressed="false">Pulseiras</button>
+      </div>
+
+      <div class="catalogo__grade" id="grade-produtos" aria-live="polite">
+        <p class="catalogo__estado">Carregando peças…</p>
+      </div>
+    </section>
+
+    <section class="sobre" id="sobre">
+      <div class="sobre__texto">
+        <h2>Nossa essência</h2>
+        <p>A Lírio nasceu em Campo Grande com um propósito simples: fazer cada pessoa se sentir ainda mais ela mesma, com peças que acompanham o dia a dia sem perder o brilho.</p>
+        <p>Cada semijoia passa por um cuidado especial de acabamento — por isso toda peça sai da Lírio com 6 meses de garantia.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="rodape__faixa">
+      <a href="#topo" class="rodape__marca">
+        <img src="assets/logo.jpeg" alt="Lírio Semijoias" width="32" height="32" />
+        <span>Lírio Semijoias</span>
+      </a>
+      <p class="rodape__local">Campo Grande, MS</p>
+      <p class="rodape__direitos">© <span id="ano-atual">2026</span> Lírio Semijoias. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <div id="painel-carrinho" class="painel-carrinho" popover>
+    <header class="painel-carrinho__cabecalho">
+      <h2>Sua sacola</h2>
+      <button type="button" class="botao-fechar" popovertarget="painel-carrinho" popovertargetaction="hide" aria-label="Fechar sacola">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </header>
+
+    <div class="painel-carrinho__itens" id="lista-carrinho">
+      <p class="painel-carrinho__vazio">Sua sacola está vazia.</p>
+    </div>
+
+    <footer class="painel-carrinho__rodape">
+      <div class="painel-carrinho__subtotal">
+        <span>Subtotal</span>
+        <strong id="subtotal-carrinho">R$ 0,00</strong>
+      </div>
+      <a
+        id="botao-finalizar"
+        class="botao botao--destaque botao--bloco"
+        href="https://api.whatsapp.com/send?phone=5567981884764"
+        target="_blank" rel="noopener"
+        aria-disabled="true">
+        Finalizar pedido no WhatsApp
+      </a>
+      <button type="button" id="botao-limpar-carrinho" class="botao-link">Esvaziar sacola</button>
+    </footer>
+  </div>
+
+  <script type="module" src="js/catalogo.js"></script>
+  <script src="js/cabecalho.js" defer></script>
+  <script src="js/rodape.js" defer></script>
+</body>
+</html>
