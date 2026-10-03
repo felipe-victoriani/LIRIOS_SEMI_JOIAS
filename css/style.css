@@ -744,8 +744,10 @@
 
   .produto-card__imagem {
     width: 100%;
+    height: auto; /* os atributos width/height do HTML não podem travar a altura */
     aspect-ratio: 1 / 1;
     object-fit: cover;
+    object-position: center;
   }
   .produto-card__imagem--placeholder {
     position: relative;
