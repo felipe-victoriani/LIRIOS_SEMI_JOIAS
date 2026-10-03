@@ -1,9 +1,10 @@
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { ref, onValue, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { ref, onValue, push, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { auth, db } from "../firebase.js";
 import { exigirAutenticacao } from "./guard.js";
 import { formatarMoeda } from "../carrinho-core.js";
-import { enviarImagem } from "../uploads.js";
+import { prepararImagem } from "../uploads.js";
+import { carregarFoto, invalidarFoto } from "../fotos.js";
 
 const corpoTabela = document.getElementById("corpo-tabela-produtos");
 const estadoTabela = document.getElementById("estado-tabela-produtos");
@@ -26,7 +27,6 @@ const mensagemErroProduto = document.getElementById("mensagem-erro-produto");
 
 let produtos = [];
 let categorias = [];
-let imagemAtual = null;
 
 function nomeDaCategoria(categoriaId) {
   return categorias.find((categoria) => categoria.id === categoriaId)?.nome ?? "—";
@@ -64,7 +64,6 @@ function abrirDialogoNovo() {
   formularioProduto.reset();
   campoId.value = "";
   campoAtivo.checked = true;
-  imagemAtual = null;
   previaImagem.hidden = true;
   preencherSelectCategorias();
   tituloDialogo.textContent = "Nova peça";
@@ -79,9 +78,18 @@ function abrirDialogoEditar(produto) {
   campoPreco.value = produto.preco ?? "";
   campoDescricao.value = produto.descricao ?? "";
   campoAtivo.checked = produto.ativo !== false;
-  imagemAtual = produto.imagemUrl ?? null;
-  previaImagem.src = imagemAtual ?? "";
-  previaImagem.hidden = !imagemAtual;
+  previaImagem.hidden = true;
+  if (produto.imagemUrl) {
+    previaImagem.src = produto.imagemUrl;
+    previaImagem.hidden = false;
+  } else if (produto.temFoto) {
+    carregarFoto(`produtos/${produto.id}`).then((url) => {
+      if (url && campoId.value === produto.id) {
+        previaImagem.src = url;
+        previaImagem.hidden = false;
+      }
+    });
+  }
   preencherSelectCategorias(produto.categoriaId);
   tituloDialogo.textContent = "Editar peça";
   mensagemErroProduto.textContent = "";
@@ -144,7 +152,7 @@ async function excluirProduto(produto) {
   if (!confirmou) return;
 
   try {
-    await remove(ref(db, `produtos/${produto.id}`));
+    await update(ref(db), { [`produtos/${produto.id}`]: null, [`fotos/produtos/${produto.id}`]: null });
   } catch {
     window.alert("Não foi possível excluir agora. Tente novamente em instantes.");
   }
@@ -156,6 +164,7 @@ formularioProduto.addEventListener("submit", async (evento) => {
 
   const preco = Number(campoPreco.value);
   const arquivo = campoImagem.files[0];
+  const novoProduto = !campoId.value;
 
   if (!campoNome.value.trim() || !Number.isFinite(preco) || preco <= 0) {
     mensagemErroProduto.textContent = "Preencha nome e um preço válido maior que zero.";
@@ -169,21 +178,29 @@ formularioProduto.addEventListener("submit", async (evento) => {
   botaoSalvarProduto.disabled = true;
   botaoSalvarProduto.textContent = "Salvando…";
   try {
-    const imagemUrl = arquivo ? await enviarImagem(arquivo, "produtos") : imagemAtual;
-    const dadosProduto = {
+    const id = campoId.value || push(ref(db, "produtos")).key;
+    const campos = {
       nome: campoNome.value.trim(),
       categoriaId: campoCategoria.value,
       preco,
       descricao: campoDescricao.value.trim(),
-      imagemUrl: imagemUrl || null,
       ativo: campoAtivo.checked,
     };
+    if (novoProduto) campos.criadoEm = Date.now();
 
-    if (campoId.value) {
-      await update(ref(db, `produtos/${campoId.value}`), dadosProduto);
-    } else {
-      await push(ref(db, "produtos"), { ...dadosProduto, criadoEm: Date.now() });
+    // Tudo numa só escrita: dados da peça e foto entram juntos ou não entram.
+    const alteracoes = {};
+    if (arquivo) {
+      alteracoes[`fotos/produtos/${id}`] = await prepararImagem(arquivo);
+      campos.temFoto = true;
+      campos.imagemUrl = null; // remove foto antiga guardada no formato anterior
     }
+    Object.entries(campos).forEach(([campo, valor]) => {
+      alteracoes[`produtos/${id}/${campo}`] = valor;
+    });
+
+    await update(ref(db), alteracoes);
+    if (arquivo) invalidarFoto(`produtos/${id}`);
     dialogoProduto.close();
   } catch {
     mensagemErroProduto.textContent = "Não foi possível salvar agora. Tente novamente em instantes.";

@@ -3,9 +3,9 @@ import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebas
 import { db } from "./firebase.js";
 import { formatarMoeda } from "./carrinho-core.js";
 import { adicionarAoCarrinho } from "./carrinho-ui.js";
+import { carregarFotoQuandoVisivel } from "./fotos.js";
 
 const gradeEl = document.getElementById("grade-produtos");
-const avisoExemploEl = document.getElementById("aviso-exemplo-catalogo");
 const secaoCatalogoEl = document.getElementById("catalogo");
 const categoriasEl = secaoCatalogoEl.querySelector(".categorias");
 
@@ -31,6 +31,7 @@ let categorias = [];
 let produtos = [];
 let categoriaAtiva = TODAS;
 let respondeuFirebase = false;
+let produtosCarregados = false;
 let temDadosReais = { categorias: false, produtos: false };
 // Quantidade escolhida em cada card antes de adicionar à sacola (chave: id do produto).
 const quantidadesSelecionadas = new Map();
@@ -42,6 +43,8 @@ function mostrarEstado(mensagem) {
   estado.textContent = mensagem;
   gradeEl.append(estado);
 }
+
+mostrarEstado("Carregando peças…");
 
 function nomeDaCategoria(categoriaId) {
   return categorias.find((categoria) => categoria.id === categoriaId)?.nome ?? "";
@@ -62,14 +65,14 @@ function criarCardProduto(produto) {
   const card = document.createElement("article");
   card.className = "produto-card";
 
-  if (produto.imagemUrl) {
+  if (produto.imagemUrl || produto.temFoto) {
     const imagem = document.createElement("img");
     imagem.className = "produto-card__imagem";
-    imagem.src = produto.imagemUrl;
     imagem.alt = produto.nome;
-    imagem.loading = "lazy";
     imagem.width = 320;
     imagem.height = 320;
+    if (produto.imagemUrl) imagem.src = produto.imagemUrl;
+    else carregarFotoQuandoVisivel(imagem, `produtos/${produto.id}`);
     card.append(imagem);
   } else {
     card.append(criarPlaceholderImagem());
@@ -150,7 +153,7 @@ function criarCardProduto(produto) {
   return card;
 }
 
-function criarCirculoCategoria(id, nome, imagemUrl) {
+function criarCirculoCategoria(id, nome, imagemUrl, temFoto) {
   const botao = document.createElement("button");
   botao.type = "button";
   botao.className = "categoria";
@@ -161,11 +164,11 @@ function criarCirculoCategoria(id, nome, imagemUrl) {
   const circulo = document.createElement("span");
   circulo.className = "categoria__circulo";
   const imagem = document.createElement("img");
-  imagem.src = imagemUrl;
   imagem.alt = "";
   imagem.width = 68;
   imagem.height = 68;
-  imagem.loading = "lazy";
+  if (imagemUrl) imagem.src = imagemUrl;
+  else if (temFoto) carregarFotoQuandoVisivel(imagem, `categorias/${id}`);
   circulo.append(imagem);
 
   const rotulo = document.createElement("span");
@@ -178,10 +181,12 @@ function criarCirculoCategoria(id, nome, imagemUrl) {
 
 function renderizarCategorias() {
   categoriasEl.innerHTML = "";
-  categoriasEl.append(criarCirculoCategoria(TODAS, "Todas", "assets/categorias/todas.webp"));
+  categoriasEl.append(criarCirculoCategoria(TODAS, "Todas", "assets/categorias/todas.webp", false));
   [...categorias]
     .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
-    .forEach((categoria) => categoriasEl.append(criarCirculoCategoria(categoria.id, categoria.nome, categoria.imagemUrl)));
+    .forEach((categoria) =>
+      categoriasEl.append(criarCirculoCategoria(categoria.id, categoria.nome, categoria.imagemUrl, categoria.temFoto))
+    );
 }
 
 function renderizarGrade() {
@@ -223,7 +228,6 @@ secaoCatalogoEl.addEventListener("click", (evento) => {
 function aplicarExemplos() {
   categorias = CATEGORIAS_EXEMPLO;
   produtos = PRODUTOS_EXEMPLO;
-  avisoExemploEl.hidden = false;
   renderizarCategorias();
   renderizarGrade();
 }
@@ -235,9 +239,9 @@ function atualizarFonte() {
     aplicarExemplos();
     return;
   }
-  avisoExemploEl.hidden = true;
   renderizarCategorias();
-  renderizarGrade();
+  // Enquanto as peças não chegaram, a grade continua com "Carregando" em vez de "Nenhuma peça".
+  if (produtosCarregados) renderizarGrade();
 }
 
 function usarExemplosSeSemResposta() {
@@ -267,6 +271,7 @@ onValue(
       .map(([id, produto]) => ({ id, ...produto }))
       .filter((produto) => produto.ativo !== false);
     temDadosReais.produtos = produtos.length > 0;
+    produtosCarregados = true;
     atualizarFonte();
   },
   usarExemplosSeSemResposta

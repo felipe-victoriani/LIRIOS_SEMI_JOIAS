@@ -6,7 +6,7 @@
       "$catId": {
         ".validate": "newData.hasChildren(['nome'])",
         "nome": { ".validate": "newData.isString() && newData.val().length > 0" },
-        "imagemUrl": { ".validate": "newData.isString()" },
+        "imagemUrl": { ".validate": "newData.isString() && newData.val().length <= 700000 && newData.val().beginsWith('data:image/')" },
         "ordem": { ".validate": "newData.isNumber()" }
       }
     },
@@ -19,7 +19,21 @@
         "nome": { ".validate": "newData.isString() && newData.val().length > 0" },
         "categoriaId": { ".validate": "newData.isString() && newData.val().length > 0" },
         "preco": { ".validate": "newData.isNumber() && newData.val() > 0" },
-        "imagemUrl": { ".validate": "newData.isString()" }
+        "imagemUrl": { ".validate": "newData.isString() && newData.val().length <= 700000 && newData.val().beginsWith('data:image/')" }
+      }
+    },
+    "fotos": {
+      ".read": true,
+      ".write": "auth != null",
+      "produtos": {
+        "$produtoId": {
+          ".validate": "newData.isString() && newData.val().length <= 700000 && newData.val().beginsWith('data:image/')"
+        }
+      },
+      "categorias": {
+        "$catId": {
+          ".validate": "newData.isString() && newData.val().length <= 700000 && newData.val().beginsWith('data:image/')"
+        }
       }
     }
   }

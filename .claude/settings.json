@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(firebase database:get / --project lirios-semi-joias)",
+      "Bash(firebase database:get /categorias --project lirios-semi-joias)"
+    ]
+  }
+}

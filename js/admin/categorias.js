@@ -1,8 +1,9 @@
 import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { ref, onValue, push, update, remove, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { ref, onValue, push, update, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { auth, db } from "../firebase.js";
 import { exigirAutenticacao } from "./guard.js";
-import { enviarImagem } from "../uploads.js";
+import { prepararImagem } from "../uploads.js";
+import { carregarFoto, carregarFotoQuandoVisivel, invalidarFoto } from "../fotos.js";
 
 const corpoTabela = document.getElementById("corpo-tabela-categorias");
 const estadoTabela = document.getElementById("estado-tabela-categorias");
@@ -22,7 +23,6 @@ const mensagemErro = document.getElementById("mensagem-erro-categoria");
 
 let categorias = [];
 let produtos = [];
-let imagemAtual = null;
 
 function contarPecas(categoriaId) {
   return produtos.filter((produto) => produto.categoriaId === categoriaId).length;
@@ -32,7 +32,6 @@ function abrirNova() {
   formulario.reset();
   campoId.value = "";
   campoOrdem.value = String(categorias.length);
-  imagemAtual = null;
   previaImagem.hidden = true;
   titulo.textContent = "Nova categoria";
   mensagemErro.textContent = "";
@@ -44,9 +43,18 @@ function abrirEditar(categoria) {
   campoId.value = categoria.id;
   campoNome.value = categoria.nome ?? "";
   campoOrdem.value = String(categoria.ordem ?? 0);
-  imagemAtual = categoria.imagemUrl ?? null;
-  previaImagem.src = imagemAtual ?? "";
-  previaImagem.hidden = !imagemAtual;
+  previaImagem.hidden = true;
+  if (categoria.imagemUrl) {
+    previaImagem.src = categoria.imagemUrl;
+    previaImagem.hidden = false;
+  } else if (categoria.temFoto) {
+    carregarFoto(`categorias/${categoria.id}`).then((url) => {
+      if (url && campoId.value === categoria.id) {
+        previaImagem.src = url;
+        previaImagem.hidden = false;
+      }
+    });
+  }
   titulo.textContent = "Editar categoria";
   mensagemErro.textContent = "";
   dialogo.showModal();
@@ -69,6 +77,7 @@ function criarLinha(categoria) {
   foto.width = 48;
   foto.height = 48;
   if (categoria.imagemUrl) foto.src = categoria.imagemUrl;
+  else if (categoria.temFoto) carregarFotoQuandoVisivel(foto, `categorias/${categoria.id}`);
   celulaFoto.append(foto);
 
   const celulaNome = document.createElement("td");
@@ -130,7 +139,7 @@ async function excluirCategoria(categoria) {
   if (!window.confirm(`Excluir a categoria "${categoria.nome}"? Essa ação não pode ser desfeita.`)) return;
 
   try {
-    await remove(ref(db, `categorias/${categoria.id}`));
+    await update(ref(db), { [`categorias/${categoria.id}`]: null, [`fotos/categorias/${categoria.id}`]: null });
   } catch {
     window.alert("Não foi possível excluir agora. Tente novamente em instantes.");
   }
@@ -161,14 +170,23 @@ formulario.addEventListener("submit", async (evento) => {
   botaoSalvar.disabled = true;
   botaoSalvar.textContent = "Salvando…";
   try {
-    const imagemUrl = arquivo ? await enviarImagem(arquivo, "categorias") : imagemAtual;
-    const dados = { nome, ordem, imagemUrl };
+    const id = campoId.value || push(ref(db, "categorias")).key;
+    const campos = { nome, ordem };
+    if (novaCategoria) campos.criadoEm = Date.now();
 
-    if (campoId.value) {
-      await update(ref(db, `categorias/${campoId.value}`), dados);
-    } else {
-      await push(ref(db, "categorias"), { ...dados, criadoEm: Date.now() });
+    // Tudo numa só escrita: dados da categoria e foto entram juntos ou não entram.
+    const alteracoes = {};
+    if (arquivo) {
+      alteracoes[`fotos/categorias/${id}`] = await prepararImagem(arquivo);
+      campos.temFoto = true;
+      campos.imagemUrl = null; // remove foto antiga guardada no formato anterior
     }
+    Object.entries(campos).forEach(([campo, valor]) => {
+      alteracoes[`categorias/${id}/${campo}`] = valor;
+    });
+
+    await update(ref(db), alteracoes);
+    if (arquivo) invalidarFoto(`categorias/${id}`);
     dialogo.close();
   } catch {
     mensagemErro.textContent = "Não foi possível salvar agora. Tente novamente em instantes.";
