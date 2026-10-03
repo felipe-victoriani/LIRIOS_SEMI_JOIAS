@@ -5,7 +5,6 @@ import { formatarMoeda } from "./carrinho-core.js";
 import { adicionarAoCarrinho } from "./carrinho-ui.js";
 
 const gradeEl = document.getElementById("grade-produtos");
-const filtrosEl = document.getElementById("filtros-categoria");
 const avisoExemploEl = document.getElementById("aviso-exemplo-catalogo");
 
 // Peças de exemplo — aparecem só enquanto não há nenhum produto real cadastrado no Firebase
@@ -151,14 +150,17 @@ function renderizarGrade() {
   produtosFiltrados.forEach((produto) => gradeEl.append(criarCardProduto(produto)));
 }
 
-filtrosEl.addEventListener("click", (evento) => {
+// Pílulas e círculos de categoria ficam na mesma seção; qualquer um dos dois filtra a grade.
+const secaoCatalogoEl = document.getElementById("catalogo");
+
+secaoCatalogoEl.addEventListener("click", (evento) => {
   const botao = evento.target.closest("[data-categoria]");
   if (!botao) return;
 
   categoriaAtiva = botao.dataset.categoria;
 
-  filtrosEl.querySelectorAll("[data-categoria]").forEach((el) => {
-    const ativo = el === botao;
+  secaoCatalogoEl.querySelectorAll("[data-categoria]").forEach((el) => {
+    const ativo = el.dataset.categoria === categoriaAtiva;
     el.classList.toggle("is-ativa", ativo);
     el.setAttribute("aria-pressed", String(ativo));
   });
