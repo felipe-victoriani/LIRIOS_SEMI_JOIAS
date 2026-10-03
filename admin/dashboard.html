@@ -18,9 +18,13 @@
 <body>
   <header class="admin-cabecalho">
     <a href="../index.html" class="admin-cabecalho__marca">
-      <img src="../assets/logo.jpeg" alt="Lírio Semijoias" width="32" height="32" />
+      <img src="../assets/logo-marca.png" alt="Lírio Semijoias" width="32" height="32" />
       <span>Admin</span>
     </a>
+    <nav class="admin-nav" aria-label="Painel">
+      <a href="dashboard.html" aria-current="page">Produtos</a>
+      <a href="categorias.html">Categorias</a>
+    </nav>
     <button type="button" id="botao-sair" class="botao-link">Sair</button>
   </header>
 
@@ -60,12 +64,7 @@
       <div class="campo-grupo">
         <div class="campo">
           <label for="campo-categoria">Categoria</label>
-          <select id="campo-categoria" name="categoria">
-            <option value="Brincos">Brincos</option>
-            <option value="Colares">Colares</option>
-            <option value="Anéis">Anéis</option>
-            <option value="Pulseiras">Pulseiras</option>
-          </select>
+          <select id="campo-categoria" name="categoriaId" required></select>
         </div>
 
         <div class="campo">
@@ -80,8 +79,9 @@
       </div>
 
       <div class="campo">
-        <label for="campo-imagem-url">URL da foto (opcional)</label>
-        <input type="url" id="campo-imagem-url" name="imagemUrl" placeholder="https://…" />
+        <label for="campo-imagem">Foto da peça</label>
+        <img id="previa-imagem" class="previa-imagem" alt="" hidden />
+        <input type="file" id="campo-imagem" accept="image/*" />
       </div>
 
       <label class="campo-checkbox">
@@ -93,7 +93,7 @@
 
       <div class="dialogo-produto__acoes">
         <button type="button" id="botao-cancelar-produto" class="botao botao--contorno">Cancelar</button>
-        <button type="submit" class="botao botao--primario">Salvar</button>
+        <button type="submit" id="botao-salvar-produto" class="botao botao--primario">Salvar</button>
       </div>
     </form>
   </dialog>

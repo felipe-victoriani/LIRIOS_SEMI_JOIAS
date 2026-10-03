@@ -1,4 +1,4 @@
-// Busca os produtos no Realtime Database e renderiza a grade do catálogo.
+// Busca categorias e produtos no Realtime Database e renderiza os círculos e a grade do catálogo.
 import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { db } from "./firebase.js";
 import { formatarMoeda } from "./carrinho-core.js";
@@ -6,20 +6,32 @@ import { adicionarAoCarrinho } from "./carrinho-ui.js";
 
 const gradeEl = document.getElementById("grade-produtos");
 const avisoExemploEl = document.getElementById("aviso-exemplo-catalogo");
+const secaoCatalogoEl = document.getElementById("catalogo");
+const categoriasEl = secaoCatalogoEl.querySelector(".categorias");
 
-// Peças de exemplo — aparecem só enquanto não há nenhum produto real cadastrado no Firebase
-// (catálogo vazio ou Firebase ainda não configurado em js/firebase-config.js). Servem pra já dar
-// pra ver o layout do card no site de verdade; somem sozinhas assim que o admin cadastrar peças
-// reais, porque aí o snapshot do Firebase deixa de vir vazio.
-const PRODUTOS_EXEMPLO = [
-  { id: "exemplo-1", nome: "Brinco Gota Dourado", categoria: "Brincos", preco: 49.9 },
-  { id: "exemplo-2", nome: "Colar Lírio Delicado", categoria: "Colares", preco: 129.9 },
-  { id: "exemplo-3", nome: "Anel Solitário Banhado a Ouro", categoria: "Anéis", preco: 89.0 },
-  { id: "exemplo-4", nome: "Pulseira Elos Finos", categoria: "Pulseiras", preco: 159.9 },
+const TODAS = "todas";
+
+// Dados de exemplo — aparecem só enquanto não há categorias nem peças cadastradas no Firebase
+// (ou enquanto o Firebase ainda não está configurado). Somem sozinhos assim que o admin cadastrar.
+const CATEGORIAS_EXEMPLO = [
+  { id: "exemplo-brincos", nome: "Brincos", imagemUrl: "assets/categorias/brincos.webp", ordem: 1 },
+  { id: "exemplo-colares", nome: "Colares", imagemUrl: "assets/categorias/colares.webp", ordem: 2 },
+  { id: "exemplo-aneis", nome: "Anéis", imagemUrl: "assets/categorias/aneis.webp", ordem: 3 },
+  { id: "exemplo-pulseiras", nome: "Pulseiras", imagemUrl: "assets/categorias/pulseiras.webp", ordem: 4 },
 ];
 
-let produtosTodos = [];
-let categoriaAtiva = "Todas";
+const PRODUTOS_EXEMPLO = [
+  { id: "exemplo-1", nome: "Brinco Gota Dourado", categoriaId: "exemplo-brincos", preco: 49.9 },
+  { id: "exemplo-2", nome: "Colar Lírio Delicado", categoriaId: "exemplo-colares", preco: 129.9 },
+  { id: "exemplo-3", nome: "Anel Solitário Banhado a Ouro", categoriaId: "exemplo-aneis", preco: 89.0 },
+  { id: "exemplo-4", nome: "Pulseira Elos Finos", categoriaId: "exemplo-pulseiras", preco: 159.9 },
+];
+
+let categorias = [];
+let produtos = [];
+let categoriaAtiva = TODAS;
+let respondeuFirebase = false;
+let temDadosReais = { categorias: false, produtos: false };
 // Quantidade escolhida em cada card antes de adicionar à sacola (chave: id do produto).
 const quantidadesSelecionadas = new Map();
 
@@ -31,7 +43,11 @@ function mostrarEstado(mensagem) {
   gradeEl.append(estado);
 }
 
-function criarPlaceholderImagem(categoria) {
+function nomeDaCategoria(categoriaId) {
+  return categorias.find((categoria) => categoria.id === categoriaId)?.nome ?? "";
+}
+
+function criarPlaceholderImagem() {
   const figura = document.createElement("div");
   figura.className = "produto-card__imagem produto-card__imagem--placeholder";
   figura.innerHTML =
@@ -56,7 +72,7 @@ function criarCardProduto(produto) {
     imagem.height = 320;
     card.append(imagem);
   } else {
-    card.append(criarPlaceholderImagem(produto.categoria));
+    card.append(criarPlaceholderImagem());
   }
 
   const corpo = document.createElement("div");
@@ -64,7 +80,7 @@ function criarCardProduto(produto) {
 
   const categoria = document.createElement("p");
   categoria.className = "produto-card__categoria";
-  categoria.textContent = produto.categoria;
+  categoria.textContent = nomeDaCategoria(produto.categoriaId);
 
   const nome = document.createElement("h3");
   nome.className = "produto-card__nome";
@@ -121,7 +137,10 @@ function criarCardProduto(produto) {
   botaoAdicionar.textContent = "Adicionar";
   botaoAdicionar.setAttribute("aria-label", `Adicionar ${produto.nome} à sacola`);
   botaoAdicionar.addEventListener("click", () => {
-    adicionarAoCarrinho(produto, quantidadesSelecionadas.get(produto.id));
+    adicionarAoCarrinho(
+      { id: produto.id, nome: produto.nome, preco: produto.preco, categoria: nomeDaCategoria(produto.categoriaId) },
+      quantidadesSelecionadas.get(produto.id)
+    );
     quantidadesSelecionadas.set(produto.id, 1);
     valorQuantidade.textContent = "1";
   });
@@ -131,17 +150,55 @@ function criarCardProduto(produto) {
   return card;
 }
 
+function criarCirculoCategoria(id, nome, imagemUrl) {
+  const botao = document.createElement("button");
+  botao.type = "button";
+  botao.className = "categoria";
+  botao.dataset.categoria = id;
+  botao.setAttribute("aria-pressed", String(id === categoriaAtiva));
+  if (id === categoriaAtiva) botao.classList.add("is-ativa");
+
+  const circulo = document.createElement("span");
+  circulo.className = "categoria__circulo";
+  const imagem = document.createElement("img");
+  imagem.src = imagemUrl;
+  imagem.alt = "";
+  imagem.width = 68;
+  imagem.height = 68;
+  imagem.loading = "lazy";
+  circulo.append(imagem);
+
+  const rotulo = document.createElement("span");
+  rotulo.className = "categoria__nome";
+  rotulo.textContent = nome;
+
+  botao.append(circulo, rotulo);
+  return botao;
+}
+
+function renderizarCategorias() {
+  categoriasEl.innerHTML = "";
+  categoriasEl.append(criarCirculoCategoria(TODAS, "Todas", "assets/categorias/todas.webp"));
+  [...categorias]
+    .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
+    .forEach((categoria) => categoriasEl.append(criarCirculoCategoria(categoria.id, categoria.nome, categoria.imagemUrl)));
+}
+
 function renderizarGrade() {
+  // Se a categoria ativa deixou de existir (ex: foi excluída), volta pra "Todas".
+  if (categoriaAtiva !== TODAS && !categorias.some((categoria) => categoria.id === categoriaAtiva)) {
+    categoriaAtiva = TODAS;
+    renderizarCategorias();
+  }
+
   const produtosFiltrados =
-    categoriaAtiva === "Todas"
-      ? produtosTodos
-      : produtosTodos.filter((produto) => produto.categoria === categoriaAtiva);
+    categoriaAtiva === TODAS ? produtos : produtos.filter((produto) => produto.categoriaId === categoriaAtiva);
 
   if (produtosFiltrados.length === 0) {
     mostrarEstado(
-      categoriaAtiva === "Todas"
+      categoriaAtiva === TODAS
         ? "Nenhuma peça cadastrada ainda. Volte em breve!"
-        : `Nenhuma peça em "${categoriaAtiva}" por enquanto.`
+        : `Nenhuma peça em "${nomeDaCategoria(categoriaAtiva)}" por enquanto.`
     );
     return;
   }
@@ -150,60 +207,71 @@ function renderizarGrade() {
   produtosFiltrados.forEach((produto) => gradeEl.append(criarCardProduto(produto)));
 }
 
-// Pílulas e círculos de categoria ficam na mesma seção; qualquer um dos dois filtra a grade.
-const secaoCatalogoEl = document.getElementById("catalogo");
-
 secaoCatalogoEl.addEventListener("click", (evento) => {
   const botao = evento.target.closest("[data-categoria]");
   if (!botao) return;
 
   categoriaAtiva = botao.dataset.categoria;
-
   secaoCatalogoEl.querySelectorAll("[data-categoria]").forEach((el) => {
     const ativo = el.dataset.categoria === categoriaAtiva;
     el.classList.toggle("is-ativa", ativo);
     el.setAttribute("aria-pressed", String(ativo));
   });
-
   renderizarGrade();
 });
 
-let respondeuFirebase = false;
-
-function usarExemplos() {
-  if (respondeuFirebase) return;
-  respondeuFirebase = true;
-  produtosTodos = PRODUTOS_EXEMPLO;
+function aplicarExemplos() {
+  categorias = CATEGORIAS_EXEMPLO;
+  produtos = PRODUTOS_EXEMPLO;
   avisoExemploEl.hidden = false;
+  renderizarCategorias();
   renderizarGrade();
 }
 
-const produtosRef = ref(db, "produtos");
+// Só usa os exemplos quando não há nem categoria nem peça real. Se o admin já cadastrou
+// categorias mas ainda não tem peças, a grade mostra a mensagem de "nenhuma peça" normalmente.
+function atualizarFonte() {
+  if (!temDadosReais.categorias && !temDadosReais.produtos) {
+    aplicarExemplos();
+    return;
+  }
+  avisoExemploEl.hidden = true;
+  renderizarCategorias();
+  renderizarGrade();
+}
+
+function usarExemplosSeSemResposta() {
+  if (respondeuFirebase) return;
+  respondeuFirebase = true;
+  aplicarExemplos();
+}
+
 onValue(
-  produtosRef,
+  ref(db, "categorias"),
   (snapshot) => {
     respondeuFirebase = true;
     const dados = snapshot.val() || {};
-    const produtosReais = Object.entries(dados)
+    categorias = Object.entries(dados).map(([id, categoria]) => ({ id, ...categoria }));
+    temDadosReais.categorias = categorias.length > 0;
+    atualizarFonte();
+  },
+  usarExemplosSeSemResposta
+);
+
+onValue(
+  ref(db, "produtos"),
+  (snapshot) => {
+    respondeuFirebase = true;
+    const dados = snapshot.val() || {};
+    produtos = Object.entries(dados)
       .map(([id, produto]) => ({ id, ...produto }))
       .filter((produto) => produto.ativo !== false);
-
-    if (produtosReais.length === 0) {
-      produtosTodos = PRODUTOS_EXEMPLO;
-      avisoExemploEl.hidden = false;
-    } else {
-      produtosTodos = produtosReais;
-      avisoExemploEl.hidden = true;
-    }
-    renderizarGrade();
+    temDadosReais.produtos = produtos.length > 0;
+    atualizarFonte();
   },
-  // Sem conexão com o Firebase (ex: config placeholder ainda não preenchida) — mostra os
-  // exemplos em vez de uma tela de erro, já que nesse caso provável é só config pendente.
-  usarExemplos
+  usarExemplosSeSemResposta
 );
 
 // O SDK do Realtime Database às vezes não chama nem o callback de sucesso nem o de erro quando
-// a config é só um placeholder (a conexão WebSocket fica tentando em segundo plano sem nunca
-// reportar falha) — por isso esse prazo de segurança: se nada respondeu, assume-se que o
-// catálogo ainda não tem Firebase configurado e mostra os exemplos.
-setTimeout(usarExemplos, 2500);
+// a config é só um placeholder — por isso o prazo de segurança: se nada respondeu, mostra os exemplos.
+setTimeout(usarExemplosSeSemResposta, 2500);

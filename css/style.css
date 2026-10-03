@@ -523,9 +523,14 @@
     transition: transform var(--duracao-media) var(--easing-padrao), box-shadow var(--duracao-media) var(--easing-padrao);
   }
   .categoria:hover .categoria__circulo { transform: translateY(-3px); box-shadow: var(--brilho-rosa); }
+  .categoria__circulo img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
   .categoria.is-ativa .categoria__circulo {
-    background: var(--degrade-primario);
-    color: var(--rosa-50);
+    box-shadow: 0 0 0 2px var(--branco), 0 0 0 4px var(--rosa-600);
     border-color: transparent;
   }
 

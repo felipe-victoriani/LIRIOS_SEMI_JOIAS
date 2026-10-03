@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Categorias | Lírio Semijoias Admin</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/png" href="../assets/favicon-64.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=Manrope:wght@400;500;600;700&display=swap" />
+
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/tokens.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+</head>
+<body>
+  <header class="admin-cabecalho">
+    <a href="../index.html" class="admin-cabecalho__marca">
+      <img src="../assets/logo-marca.png" alt="Lírio Semijoias" width="32" height="32" />
+      <span>Admin</span>
+    </a>
+    <nav class="admin-nav" aria-label="Painel">
+      <a href="dashboard.html">Produtos</a>
+      <a href="categorias.html" aria-current="page">Categorias</a>
+    </nav>
+    <button type="button" id="botao-sair" class="botao-link">Sair</button>
+  </header>
+
+  <main class="admin-conteudo">
+    <div class="admin-conteudo__cabecalho">
+      <h1>Categorias</h1>
+      <button type="button" id="botao-nova-categoria" class="botao botao--primario">Nova categoria</button>
+    </div>
+
+    <div class="tabela-produtos-wrapper">
+      <table class="tabela-produtos">
+        <thead>
+          <tr>
+            <th scope="col">Foto</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Ordem</th>
+            <th scope="col">Peças</th>
+            <th scope="col"><span class="somente-leitor-tela">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody id="corpo-tabela-categorias"></tbody>
+      </table>
+      <p id="estado-tabela-categorias" class="admin-conteudo__estado">Carregando categorias…</p>
+    </div>
+  </main>
+
+  <dialog id="dialogo-categoria" class="dialogo-produto">
+    <form id="formulario-categoria" novalidate>
+      <h2 id="titulo-dialogo-categoria">Nova categoria</h2>
+      <input type="hidden" id="campo-categoria-id" />
+
+      <div class="campo">
+        <label for="campo-categoria-nome">Nome</label>
+        <input type="text" id="campo-categoria-nome" name="nome" required />
+      </div>
+
+      <div class="campo">
+        <label for="campo-categoria-ordem">Ordem no catálogo</label>
+        <input type="number" id="campo-categoria-ordem" name="ordem" min="0" step="1" value="0" />
+      </div>
+
+      <div class="campo">
+        <label for="campo-categoria-imagem">Foto do círculo</label>
+        <img id="previa-categoria-imagem" class="previa-imagem previa-imagem--redonda" alt="" hidden />
+        <input type="file" id="campo-categoria-imagem" accept="image/*" />
+      </div>
+
+      <p id="mensagem-erro-categoria" class="mensagem-erro" role="alert" aria-live="assertive"></p>
+
+      <div class="dialogo-produto__acoes">
+        <button type="button" id="botao-cancelar-categoria" class="botao botao--contorno">Cancelar</button>
+        <button type="submit" id="botao-salvar-categoria" class="botao botao--primario">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="../js/admin/categorias.js"></script>
+</body>
+</html>

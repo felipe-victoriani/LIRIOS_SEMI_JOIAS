@@ -161,3 +161,29 @@
   .dialogo-produto h2 { margin-bottom: var(--espaco-sm); font-size: var(--tamanho-h3); }
   .dialogo-produto__acoes { display: flex; justify-content: flex-end; gap: var(--espaco-sm); margin-top: var(--espaco-sm); }
 }
+
+@layer componentes {
+  .admin-nav { display: flex; gap: var(--espaco-md); }
+  .admin-nav a {
+    color: var(--cor-texto-suave);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--tamanho-pequeno);
+    padding-block: 0.25rem;
+    border-bottom: 2px solid transparent;
+  }
+  .admin-nav a:hover { color: var(--cor-texto); }
+  .admin-nav a[aria-current="page"] { color: var(--cor-texto); border-bottom-color: var(--rosa-500); }
+
+  .previa-imagem {
+    display: block;
+    width: 100%;
+    max-width: 220px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: var(--raio-md);
+    margin-bottom: var(--espaco-xs);
+  }
+  .previa-imagem--redonda { width: 96px; height: 96px; max-width: none; border-radius: 50%; }
+  .tabela-produtos td .previa-imagem--redonda { width: 48px; height: 48px; margin: 0; }
+}

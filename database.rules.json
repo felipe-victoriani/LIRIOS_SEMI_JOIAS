@@ -1,13 +1,25 @@
 {
   "rules": {
+    "categorias": {
+      ".read": true,
+      ".write": "auth != null",
+      "$catId": {
+        ".validate": "newData.hasChildren(['nome'])",
+        "nome": { ".validate": "newData.isString() && newData.val().length > 0" },
+        "imagemUrl": { ".validate": "newData.isString()" },
+        "ordem": { ".validate": "newData.isNumber()" }
+      }
+    },
     "produtos": {
       ".read": true,
       ".write": "auth != null",
+      ".indexOn": ["categoriaId"],
       "$produtoId": {
-        ".validate": "newData.hasChildren(['nome', 'categoria', 'preco'])",
+        ".validate": "newData.hasChildren(['nome', 'categoriaId', 'preco'])",
         "nome": { ".validate": "newData.isString() && newData.val().length > 0" },
-        "categoria": { ".validate": "newData.isString() && newData.val().length > 0" },
-        "preco": { ".validate": "newData.isNumber() && newData.val() > 0" }
+        "categoriaId": { ".validate": "newData.isString() && newData.val().length > 0" },
+        "preco": { ".validate": "newData.isNumber() && newData.val() > 0" },
+        "imagemUrl": { ".validate": "newData.isString()" }
       }
     }
   }
