@@ -79,29 +79,10 @@
     --easing-padrao: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-tema="claro"]) {
-      --cor-fundo: var(--rosa-900);
-      --cor-texto: var(--rosa-100);
-      --cor-texto-suave: var(--rosa-300);
-      --cor-superficie: oklch(22% 0.04 10);
-      --cor-borda: color-mix(in oklch, var(--rosa-100) 16%, transparent);
-      --degrade-superficie: linear-gradient(175deg, oklch(24% 0.045 10), var(--rosa-900));
-      --degrade-fundo: radial-gradient(ellipse 80% 60% at 15% -10%, oklch(24% 0.05 9), transparent 60%),
-                        radial-gradient(ellipse 70% 50% at 100% 0%, oklch(21% 0.045 9), transparent 55%),
-                        var(--rosa-900);
-    }
-  }
-
-  :root[data-tema="escuro"] {
-    --cor-fundo: var(--rosa-900);
-    --cor-texto: var(--rosa-100);
-    --cor-texto-suave: var(--rosa-300);
-    --cor-superficie: oklch(22% 0.04 10);
-    --cor-borda: color-mix(in oklch, var(--rosa-100) 16%, transparent);
-    --degrade-superficie: linear-gradient(175deg, oklch(24% 0.045 10), var(--rosa-900));
-    --degrade-fundo: radial-gradient(ellipse 80% 60% at 15% -10%, oklch(24% 0.05 9), transparent 60%),
-                      radial-gradient(ellipse 70% 50% at 100% 0%, oklch(21% 0.045 9), transparent 55%),
-                      var(--rosa-900);
-  }
+  /* Sem modo escuro automático, de propósito: a identidade da marca É a paleta clara de
+     rosa — um dark mode decente exigiria redesenhar cada componente (brilhos do hero,
+     botões, cards) pra esse tema, e ninguém pediu isso. Antes, só o fundo/texto trocavam
+     de cor sob prefers-color-scheme:dark e o resto ficava com tom claro — resultado era
+     uma mistura quebrada (visto num iPhone real com Modo Escuro do sistema ativado).
+     color-scheme:light em reset.css garante que o navegador não force nada por conta própria. */
 }

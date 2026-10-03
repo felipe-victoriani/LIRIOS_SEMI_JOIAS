@@ -8,7 +8,10 @@
 
   html {
     -webkit-text-size-adjust: 100%;
-    color-scheme: light dark;
+    /* "light" fixo (não "light dark"): a marca só tem tema claro desenhado — isso evita
+       que o navegador escureça sozinho form controls/scrollbar quando o sistema está em
+       modo escuro, o que destoaria da paleta rosa clara do resto da página. */
+    color-scheme: light;
     scroll-behavior: smooth;
   }
 
