@@ -199,12 +199,8 @@
     gap: var(--espaco-sm);
     text-decoration: none;
   }
-  /* Logo circular (recorte do diamante, mesmo crop do favicon) em vez do quadrado
-     "adesivo" cru — ecoa o avatar redondo que a marca já usa no Instagram. */
-  .cabecalho__logo {
-    border-radius: 50%;
-    box-shadow: 0 0 0 2px var(--branco), 0 0 0 3px var(--rosa-300);
-  }
+  /* A marca já é um círculo com fundo transparente (assets/logo-marca.png), sem moldura extra. */
+  .cabecalho__logo { display: block; }
 
   .cabecalho__nav ul { display: flex; gap: var(--espaco-md); }
   .cabecalho__nav a {
@@ -575,26 +571,38 @@
     padding-block: var(--espaco-lg);
   }
 
-  /* Sobre em duas colunas: imagem da flor de um lado, texto e assinatura do outro. */
+  /* Sobre: a arte da flor cobre a seção inteira como fundo; o texto fica na metade direita,
+     onde a arte é só um degradê rosa claro. */
   .sobre {
-    width: min(100% - 2 * var(--espaco-md), 72rem);
-    margin-inline: auto;
-    padding-block: var(--espaco-xl);
+    position: relative;
+    isolation: isolate;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--espaco-xl);
     align-items: center;
+    aspect-ratio: 2.3 / 1;
+    padding-block: var(--espaco-lg);
+    padding-inline: max(var(--espaco-md), calc(50% - 36rem + var(--espaco-md)));
+    /* A arte tem moldura arredondada própria; o zoom de 112% tira essa borda da área visível. */
+    background: url("../assets/og-image.jpg") center / 112% auto no-repeat;
+    background-color: var(--rosa-50);
   }
+  .sobre__texto { grid-column: 2; max-width: 36rem; }
   @media (max-width: 54rem) {
-    .sobre { grid-template-columns: 1fr; gap: var(--espaco-lg); }
+    .sobre {
+      grid-template-columns: 1fr;
+      aspect-ratio: auto;
+      padding-block: var(--espaco-lg);
+      padding-inline: var(--espaco-md);
+      background-image:
+        linear-gradient(180deg,
+          color-mix(in oklch, var(--rosa-50) 70%, transparent),
+          color-mix(in oklch, var(--rosa-50) 60%, transparent)),
+        url("../assets/og-image.jpg");
+      background-size: 100% 100%, cover;
+      background-position: 0 0, center;
+    }
+    .sobre__texto { grid-column: auto; }
   }
-  .sobre__visual {
-    border-radius: var(--raio-lg);
-    overflow: hidden;
-    box-shadow: var(--sombra-elevada), var(--brilho-rosa);
-  }
-  /* A arte já tem moldura arredondada própria; o zoom corta essa borda pra não virar moldura dupla. */
-  .sobre__visual img { width: 100%; height: auto; aspect-ratio: 1200 / 630; object-fit: cover; transform: scale(1.12); }
   .sobre__texto h2 { font-size: var(--tamanho-h2); margin-bottom: var(--espaco-sm); color: var(--rosa-800); }
   .sobre__texto p { color: var(--cor-texto-suave); max-width: 60ch; margin-bottom: var(--espaco-sm); }
   .sobre__assinatura {
@@ -638,7 +646,7 @@
     color: var(--rosa-50);
   }
   .rodape__marca em { font-style: italic; color: var(--rosa-300); }
-  .rodape__logo { border-radius: 50%; box-shadow: 0 0 0 2px var(--rosa-700), 0 0 0 3px var(--rosa-300); }
+  .rodape__logo { display: block; }
   .rodape__nav ul { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--espaco-md); }
   .rodape__nav a { color: var(--rosa-100); text-decoration: none; font-weight: 600; }
   .rodape__nav a:hover { color: var(--rosa-300); text-decoration: underline; text-underline-offset: 4px; }
