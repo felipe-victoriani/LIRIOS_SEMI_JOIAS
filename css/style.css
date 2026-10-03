@@ -377,8 +377,11 @@
     overflow: visible;
   }
   .hero__brilho {
+    /* Sem "filter: drop-shadow" aqui de propósito — combinado com animação de transform/opacity
+       num SVG, isso cria uma camada de composição cujo retângulo delimitador aparece como um
+       quadrado visível em navegadores mobile (reproduzido num iPhone real testando o deploy).
+       O brilho em si já vem do preenchimento (fill) e da animação, sem precisar do filtro. */
     position: absolute;
-    filter: drop-shadow(0 0 6px color-mix(in oklch, var(--rosa-400) 70%, transparent));
     animation: brilho-pisca 2.8s ease-in-out infinite;
   }
   .hero__brilho--1 { top: 6%;  left: 2%;   color: var(--rosa-400); animation-delay: 0s; }
