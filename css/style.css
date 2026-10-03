@@ -157,15 +157,30 @@
 }
 
 @layer layout {
+  /* Degradê rosa quente + "bokeh" (pontinhos de brilho) ecoando assets/img_para_header.jpeg —
+     tudo estático (sem animação) de propósito: um SVG animado no cabeçalho já causou bug de
+     renderização em navegador mobile real (ver .hero__brilho); aqui o brilho vem só do
+     background composto em camadas, que não tem esse risco. */
   .cabecalho {
     position: sticky;
     top: 0;
     z-index: 20;
-    background: color-mix(in oklch, var(--branco) 65%, transparent);
+    background:
+      radial-gradient(circle 2px at 8% 35%,  color-mix(in oklch, var(--branco) 85%, transparent), transparent 70%),
+      radial-gradient(circle 3px at 16% 70%, color-mix(in oklch, var(--rosa-200) 80%, transparent), transparent 70%),
+      radial-gradient(circle 2px at 24% 25%, color-mix(in oklch, var(--branco) 75%, transparent), transparent 70%),
+      radial-gradient(circle 3px at 33% 60%, color-mix(in oklch, var(--rosa-300) 70%, transparent), transparent 70%),
+      radial-gradient(circle 2px at 45% 30%, color-mix(in oklch, var(--branco) 65%, transparent), transparent 70%),
+      radial-gradient(circle 2px at 58% 65%, color-mix(in oklch, var(--rosa-200) 60%, transparent), transparent 70%),
+      radial-gradient(circle 2px at 72% 30%, color-mix(in oklch, var(--branco) 55%, transparent), transparent 70%),
+      linear-gradient(90deg,
+        color-mix(in oklch, var(--rosa-300) 42%, var(--branco)),
+        color-mix(in oklch, var(--rosa-100) 55%, var(--branco)) 55%,
+        color-mix(in oklch, var(--rosa-50) 70%, var(--branco)));
     backdrop-filter: blur(16px) saturate(160%);
     -webkit-backdrop-filter: blur(16px) saturate(160%);
     border-bottom: 1px solid transparent;
-    border-image: linear-gradient(90deg, transparent, var(--rosa-300), transparent) 1;
+    border-image: linear-gradient(90deg, var(--rosa-300), var(--rosa-200), transparent) 1;
   }
 
   .cabecalho__faixa {
@@ -190,11 +205,28 @@
     border-radius: 50%;
     box-shadow: 0 0 0 2px var(--branco), 0 0 0 3px var(--rosa-300);
   }
+  /* "Chip" de vidro (glassmorphism) ao redor do nome — mesma família de efeito já usada no
+     cabeçalho/carrinho/menu, aplicada aqui como um pingente translúcido ao lado do logo. */
   .cabecalho__nome {
+    /* inline-block, não inline-flex: flex trataria o texto e o <em> como itens separados
+       e comia o espaço entre "Lírio" e "Semijoias". */
+    display: inline-block;
+    padding: 0.4em 0.95em;
+    border-radius: var(--raio-pill);
     font-family: var(--fonte-display);
     font-weight: 600;
     font-size: 1.15rem;
     color: var(--rosa-800);
+    background: linear-gradient(155deg,
+      color-mix(in oklch, var(--branco) 55%, transparent),
+      color-mix(in oklch, var(--branco) 20%, transparent));
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+    border: 1px solid color-mix(in oklch, var(--branco) 65%, transparent);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklch, var(--branco) 80%, transparent),
+      inset 0 -6px 10px -6px color-mix(in oklch, var(--rosa-400) 35%, transparent),
+      0 3px 10px color-mix(in oklch, var(--rosa-800) 10%, transparent);
   }
   .cabecalho__nome em { font-style: italic; color: var(--rosa-600); }
 
