@@ -200,7 +200,6 @@
     text-decoration: none;
   }
   /* A marca já é um círculo com fundo transparente (assets/logo-marca.png), sem moldura extra. */
-  .cabecalho__logo { display: block; }
   .cabecalho__wordmark { display: block; width: auto; height: 44px; }
 
   .cabecalho__nav ul { display: flex; gap: var(--espaco-md); }
@@ -577,8 +576,13 @@
     aspect-ratio: 2.3 / 1;
     padding-block: var(--espaco-lg);
     padding-inline: max(var(--espaco-md), calc(50% - 36rem + var(--espaco-md)));
-    /* A arte tem moldura arredondada própria; o zoom de 112% tira essa borda da área visível. */
-    background: url("../assets/og-image.jpg") center / 112% auto no-repeat;
+    /* A seção é bem mais larga que a foto: posiciona perto do fundo pra manter a sacola (logo) e a flor visíveis. */
+    /* Véu rosa suave do lado do texto, pra leitura ficar confortável sem esconder a foto. */
+    background:
+      linear-gradient(90deg,
+        transparent 0 42%,
+        color-mix(in oklch, var(--rosa-50) 80%, transparent) 60%),
+      url("../assets/img_sacola_section_essencia.jpeg") center 88% / cover no-repeat;
     background-color: var(--rosa-50);
   }
   .sobre__texto { grid-column: 2; max-width: 36rem; }
@@ -592,7 +596,7 @@
         linear-gradient(180deg,
           color-mix(in oklch, var(--rosa-50) 70%, transparent),
           color-mix(in oklch, var(--rosa-50) 60%, transparent)),
-        url("../assets/og-image.jpg");
+        url("../assets/img_sacola_section_essencia.jpeg");
       background-size: 100% 100%, cover;
       background-position: 0 0, center;
     }
