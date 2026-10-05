@@ -61,6 +61,35 @@ function criarPlaceholderImagem() {
   return figura;
 }
 
+// Descrições acima desse tamanho são cortadas no card, com um "Ver mais" pra mostrar o texto todo.
+const LIMITE_DESCRICAO = 90;
+
+function criarDescricao(texto) {
+  const bloco = document.createElement("div");
+  bloco.className = "produto-card__descricao";
+
+  const paragrafo = document.createElement("p");
+  paragrafo.className = "produto-card__texto";
+  paragrafo.textContent = texto;
+  bloco.append(paragrafo);
+
+  if (texto.length > LIMITE_DESCRICAO) {
+    paragrafo.classList.add("produto-card__texto--longo");
+    const botao = document.createElement("button");
+    botao.type = "button";
+    botao.className = "produto-card__ver-mais";
+    botao.textContent = "Ver mais";
+    botao.setAttribute("aria-expanded", "false");
+    botao.addEventListener("click", () => {
+      const aberta = paragrafo.classList.toggle("is-aberta");
+      botao.textContent = aberta ? "Ver menos" : "Ver mais";
+      botao.setAttribute("aria-expanded", String(aberta));
+    });
+    bloco.append(botao);
+  }
+  return bloco;
+}
+
 function criarCardProduto(produto) {
   const card = document.createElement("article");
   card.className = "produto-card";
@@ -93,7 +122,9 @@ function criarCardProduto(produto) {
   preco.className = "produto-card__preco";
   preco.textContent = formatarMoeda(produto.preco);
 
-  corpo.append(categoria, nome, preco);
+  corpo.append(categoria, nome);
+  if (produto.descricao) corpo.append(criarDescricao(produto.descricao));
+  corpo.append(preco);
 
   const rodape = document.createElement("div");
   rodape.className = "produto-card__rodape";

@@ -780,6 +780,31 @@
     color: var(--rosa-700);
   }
 
+  .produto-card__descricao { display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; margin-bottom: 0.4rem; }
+  .produto-card__texto {
+    font-size: var(--tamanho-pequeno);
+    color: var(--cor-texto-suave);
+    line-height: 1.5;
+    white-space: pre-line;
+  }
+  .produto-card__texto--longo:not(.is-aberta) {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .produto-card__ver-mais {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--rosa-700);
+    font-size: var(--tamanho-pequeno);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .produto-card__ver-mais:hover { color: var(--rosa-800); }
   .produto-card__corpo { padding: var(--espaco-sm); flex: 1; }
   .produto-card__categoria {
     font-size: 0.7rem;
