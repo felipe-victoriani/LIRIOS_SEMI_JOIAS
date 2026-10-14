@@ -19,6 +19,7 @@
         "nome": { ".validate": "newData.isString() && newData.val().length > 0" },
         "categoriaId": { ".validate": "newData.isString() && newData.val().length > 0" },
         "preco": { ".validate": "newData.isNumber() && newData.val() > 0" },
+        "fotosExtras": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 2" },
         "imagemUrl": { ".validate": "newData.isString() && newData.val().length <= 700000 && newData.val().beginsWith('data:image/')" }
       }
     },
@@ -33,6 +34,13 @@
       "categorias": {
         "$catId": {
           ".validate": "newData.isString() && newData.val().length <= 700000 && newData.val().beginsWith('data:image/')"
+        }
+      },
+      "galeria": {
+        "$produtoId": {
+          "$posicao": {
+            ".validate": "($posicao === '1' || $posicao === '2') && newData.isString() && newData.val().length <= 700000 && newData.val().beginsWith('data:image/')"
+          }
         }
       }
     }

@@ -909,6 +909,101 @@
   }
   .carrinho-item__remover:hover { background: var(--rosa-200); color: var(--rosa-600); }
 
+  /* Capa de peça com várias fotos: botão que ocupa a imagem inteira, com selo no canto. */
+  .produto-card__fotos {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  .produto-card__fotos:focus-visible { outline: 3px solid var(--rosa-600); outline-offset: -3px; }
+  .produto-card__selo-fotos {
+    position: absolute;
+    right: var(--espaco-xs);
+    bottom: var(--espaco-xs);
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--raio-pill);
+    background: color-mix(in oklch, var(--branco) 90%, transparent);
+    color: var(--rosa-800);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  /* Galeria de fotos da peça (diálogo nativo + carrossel com scroll-snap). */
+  .galeria {
+    margin: auto;
+    padding: var(--espaco-sm);
+    width: min(100% - 2 * var(--espaco-sm), 40rem);
+    max-height: 100dvh;
+    border: none;
+    border-radius: var(--raio-md);
+    background: var(--cor-superficie);
+    color: var(--cor-texto);
+  }
+  .galeria::backdrop { background: color-mix(in oklch, var(--rosa-900) 70%, transparent); }
+  .galeria[open] { display: flex; flex-direction: column; gap: var(--espaco-xs); }
+  .galeria__cabecalho { display: flex; align-items: center; justify-content: space-between; gap: var(--espaco-sm); }
+  .galeria__titulo { font-size: var(--tamanho-h3); }
+  .galeria__fechar,
+  .galeria__seta {
+    display: grid;
+    place-items: center;
+    width: 2.75rem; /* alvo de toque mínimo de 44px */
+    height: 2.75rem;
+    border: none;
+    border-radius: var(--raio-pill);
+    background: color-mix(in oklch, var(--branco) 88%, transparent);
+    color: var(--rosa-800);
+    cursor: pointer;
+  }
+  .galeria__fechar:hover,
+  .galeria__seta:hover:not(:disabled) { background: var(--rosa-100); }
+  .galeria__seta:disabled { opacity: 0.35; cursor: default; }
+  .galeria__palco { position: relative; }
+  .galeria__faixa {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    border-radius: var(--raio-md);
+    background: var(--rosa-50);
+    min-height: 8rem;
+  }
+  .galeria__faixa::-webkit-scrollbar { display: none; }
+  .galeria__foto {
+    flex: 0 0 100%;
+    width: 100%;
+    max-height: 70dvh;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    scroll-snap-align: center;
+  }
+  .galeria__seta { position: absolute; top: 50%; translate: 0 -50%; }
+  .galeria__seta--anterior { left: var(--espaco-xs); }
+  .galeria__seta--proxima { right: var(--espaco-xs); }
+  .galeria__rodape { display: flex; align-items: center; justify-content: space-between; gap: var(--espaco-sm); }
+  .galeria__miniaturas { display: flex; gap: var(--espaco-xs); }
+  .galeria__miniatura {
+    width: 3.5rem;
+    height: 3.5rem;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: var(--raio-sm);
+    overflow: hidden;
+    background: none;
+    cursor: pointer;
+  }
+  .galeria__miniatura img { width: 100%; height: 100%; object-fit: cover; }
+  .galeria__miniatura[aria-current="true"] { border-color: var(--rosa-600); }
+  .galeria__contador { font-size: var(--tamanho-pequeno); color: var(--cor-texto-suave); }
+  @media (prefers-reduced-motion: reduce) {
+    .galeria__faixa { scroll-behavior: auto; }
+  }
+
   .painel-carrinho__rodape { display: flex; flex-direction: column; gap: var(--espaco-sm); }
   .painel-carrinho__subtotal {
     display: flex;

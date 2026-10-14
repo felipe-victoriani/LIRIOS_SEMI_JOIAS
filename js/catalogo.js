@@ -4,6 +4,7 @@ import { db } from "./firebase.js";
 import { formatarMoeda } from "./carrinho-core.js";
 import { adicionarAoCarrinho } from "./carrinho-ui.js";
 import { carregarFotoQuandoVisivel } from "./fotos.js";
+import { abrirGaleria } from "./galeria.js";
 
 const gradeEl = document.getElementById("grade-produtos");
 const secaoCatalogoEl = document.getElementById("catalogo");
@@ -102,7 +103,23 @@ function criarCardProduto(produto) {
     imagem.height = 320;
     if (produto.imagemUrl) imagem.src = produto.imagemUrl;
     else carregarFotoQuandoVisivel(imagem, `produtos/${produto.id}`);
-    card.append(imagem);
+
+    if (produto.fotosExtras > 0) {
+      // Peça com mais fotos: a capa vira um botão que abre a galeria, com um selo "N fotos".
+      const total = produto.fotosExtras + 1;
+      const botaoFotos = document.createElement("button");
+      botaoFotos.type = "button";
+      botaoFotos.className = "produto-card__fotos";
+      botaoFotos.setAttribute("aria-label", `Ver as ${total} fotos de ${produto.nome}`);
+      botaoFotos.addEventListener("click", () => abrirGaleria(produto));
+      const selo = document.createElement("span");
+      selo.className = "produto-card__selo-fotos";
+      selo.textContent = `${total} fotos`;
+      botaoFotos.append(imagem, selo);
+      card.append(botaoFotos);
+    } else {
+      card.append(imagem);
+    }
   } else {
     card.append(criarPlaceholderImagem());
   }

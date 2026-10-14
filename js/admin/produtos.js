@@ -4,7 +4,7 @@ import { auth, db } from "../firebase.js";
 import { exigirAutenticacao } from "./guard.js";
 import { formatarMoeda } from "../carrinho-core.js";
 import { prepararImagem } from "../uploads.js";
-import { carregarFoto, invalidarFoto } from "../fotos.js";
+import { carregarFoto, carregarGaleria, invalidarFoto } from "../fotos.js";
 
 const corpoTabela = document.getElementById("corpo-tabela-produtos");
 const estadoTabela = document.getElementById("estado-tabela-produtos");
@@ -20,13 +20,22 @@ const campoNome = document.getElementById("campo-nome");
 const campoCategoria = document.getElementById("campo-categoria");
 const campoPreco = document.getElementById("campo-preco");
 const campoDescricao = document.getElementById("campo-descricao");
-const campoImagem = document.getElementById("campo-imagem");
-const previaImagem = document.getElementById("previa-imagem");
+const listaSlots = document.getElementById("slots-fotos");
 const campoAtivo = document.getElementById("campo-ativo");
 const mensagemErroProduto = document.getElementById("mensagem-erro-produto");
 
 let produtos = [];
 let categorias = [];
+
+// Cada peça tem até 3 fotos: slot 0 é a capa (/fotos/produtos/{id}), slots 1 e 2 são extras
+// (/fotos/galeria/{id}/1 e /2). Cada slot guarda a foto atual do banco, um arquivo novo escolhido
+// e se o admin pediu pra remover.
+const TOTAL_SLOTS = 3;
+let slots = [];
+// Fotos extras como estão no banco (pra gravar só o que mudou) e promessa de quando terminam de carregar.
+let galeriaOriginal = [];
+let galeriaPronta = Promise.resolve();
+let extrasEsperadas = 0;
 
 // Traduz o erro técnico numa mensagem que ajude quem está usando o painel (ex: sessão expirada no celular).
 function mensagemDeErro(erro) {
@@ -61,18 +70,106 @@ function preencherSelectCategorias(categoriaSelecionada) {
   if (categoriaSelecionada) campoCategoria.value = categoriaSelecionada;
 }
 
-campoImagem.addEventListener("change", () => {
-  const arquivo = campoImagem.files[0];
-  if (!arquivo) return;
-  previaImagem.src = URL.createObjectURL(arquivo);
-  previaImagem.hidden = false;
-});
+// Mostra a prévia e o botão "Remover" de acordo com o estado do slot.
+function atualizarSlot(slot) {
+  const urlVisivel = slot.arquivo ? slot.urlLocal : slot.removida ? null : slot.urlAtual;
+  slot.previa.hidden = !urlVisivel;
+  if (urlVisivel) slot.previa.src = urlVisivel;
+  // A capa só pode ser trocada; as extras também podem ser removidas.
+  slot.botaoRemover.hidden = slot.indice === 0 || !urlVisivel;
+}
+
+function criarSlot(indice) {
+  const slot = { indice, arquivo: null, urlLocal: null, urlAtual: null, removida: false };
+
+  const caixa = document.createElement("div");
+  caixa.className = "foto-slot";
+
+  const rotulo = document.createElement("label");
+  rotulo.className = "foto-slot__rotulo";
+  rotulo.htmlFor = `campo-foto-${indice}`;
+  rotulo.textContent = indice === 0 ? "Capa" : `Foto ${indice + 1}`;
+
+  slot.previa = document.createElement("img");
+  slot.previa.className = "previa-imagem foto-slot__previa";
+  slot.previa.alt = "";
+  slot.previa.hidden = true;
+
+  slot.input = document.createElement("input");
+  slot.input.type = "file";
+  slot.input.id = `campo-foto-${indice}`;
+  slot.input.accept = "image/*";
+  slot.input.addEventListener("change", () => {
+    const arquivo = slot.input.files[0];
+    if (!arquivo) return;
+    if (slot.urlLocal) URL.revokeObjectURL(slot.urlLocal);
+    slot.arquivo = arquivo;
+    slot.urlLocal = URL.createObjectURL(arquivo);
+    slot.removida = false;
+    atualizarSlot(slot);
+  });
+
+  slot.botaoRemover = document.createElement("button");
+  slot.botaoRemover.type = "button";
+  slot.botaoRemover.className = "botao-link botao-link--perigo";
+  slot.botaoRemover.textContent = "Remover foto";
+  slot.botaoRemover.hidden = true;
+  slot.botaoRemover.addEventListener("click", () => {
+    if (slot.urlLocal) URL.revokeObjectURL(slot.urlLocal);
+    slot.arquivo = null;
+    slot.urlLocal = null;
+    slot.removida = true;
+    slot.input.value = "";
+    atualizarSlot(slot);
+  });
+
+  caixa.append(rotulo, slot.previa, slot.input, slot.botaoRemover);
+  listaSlots.append(caixa);
+  return slot;
+}
+
+// Recria os 3 espaços zerados; é chamado sempre que o diálogo abre.
+function reiniciarSlots() {
+  slots.forEach((slot) => slot.urlLocal && URL.revokeObjectURL(slot.urlLocal));
+  listaSlots.innerHTML = "";
+  slots = Array.from({ length: TOTAL_SLOTS }, (_, indice) => criarSlot(indice));
+  galeriaOriginal = [];
+  galeriaPronta = Promise.resolve();
+  extrasEsperadas = 0;
+}
+
+// Preenche os slots com as fotos que a peça já tem no banco.
+function carregarFotosNosSlots(produto) {
+  if (produto.imagemUrl) {
+    slots[0].urlAtual = produto.imagemUrl;
+    atualizarSlot(slots[0]);
+  } else if (produto.temFoto) {
+    carregarFoto(`produtos/${produto.id}`).then((url) => {
+      if (url && campoId.value === produto.id) {
+        slots[0].urlAtual = url;
+        atualizarSlot(slots[0]);
+      }
+    });
+  }
+
+  extrasEsperadas = produto.fotosExtras ?? 0;
+  if (extrasEsperadas > 0) {
+    galeriaPronta = carregarGaleria(produto.id).then((lista) => {
+      if (campoId.value !== produto.id) return;
+      galeriaOriginal = lista;
+      lista.forEach((url, posicao) => {
+        slots[posicao + 1].urlAtual = url;
+        atualizarSlot(slots[posicao + 1]);
+      });
+    });
+  }
+}
 
 function abrirDialogoNovo() {
   formularioProduto.reset();
   campoId.value = "";
   campoAtivo.checked = true;
-  previaImagem.hidden = true;
+  reiniciarSlots();
   preencherSelectCategorias();
   tituloDialogo.textContent = "Nova peça";
   mensagemErroProduto.textContent = "";
@@ -86,18 +183,8 @@ function abrirDialogoEditar(produto) {
   campoPreco.value = produto.preco ?? "";
   campoDescricao.value = produto.descricao ?? "";
   campoAtivo.checked = produto.ativo !== false;
-  previaImagem.hidden = true;
-  if (produto.imagemUrl) {
-    previaImagem.src = produto.imagemUrl;
-    previaImagem.hidden = false;
-  } else if (produto.temFoto) {
-    carregarFoto(`produtos/${produto.id}`).then((url) => {
-      if (url && campoId.value === produto.id) {
-        previaImagem.src = url;
-        previaImagem.hidden = false;
-      }
-    });
-  }
+  reiniciarSlots();
+  carregarFotosNosSlots(produto);
   preencherSelectCategorias(produto.categoriaId);
   tituloDialogo.textContent = "Editar peça";
   mensagemErroProduto.textContent = "";
@@ -160,7 +247,11 @@ async function excluirProduto(produto) {
   if (!confirmou) return;
 
   try {
-    await update(ref(db), { [`produtos/${produto.id}`]: null, [`fotos/produtos/${produto.id}`]: null });
+    await update(ref(db), {
+      [`produtos/${produto.id}`]: null,
+      [`fotos/produtos/${produto.id}`]: null,
+      [`fotos/galeria/${produto.id}`]: null,
+    });
   } catch {
     window.alert("Não foi possível excluir agora. Tente novamente em instantes.");
   }
@@ -171,7 +262,7 @@ formularioProduto.addEventListener("submit", async (evento) => {
   mensagemErroProduto.textContent = "";
 
   const preco = Number(campoPreco.value);
-  const arquivo = campoImagem.files[0];
+  const arquivoCapa = slots[0].arquivo;
   const novoProduto = !campoId.value;
 
   if (!campoNome.value.trim() || !Number.isFinite(preco) || preco <= 0) {
@@ -196,19 +287,41 @@ formularioProduto.addEventListener("submit", async (evento) => {
     };
     if (novoProduto) campos.criadoEm = Date.now();
 
-    // Tudo numa só escrita: dados da peça e foto entram juntos ou não entram.
+    // Espera as fotos extras terminarem de carregar; se falharam, não salva pra não apagá-las sem querer.
+    await galeriaPronta;
+    if (galeriaOriginal.length < extrasEsperadas) {
+      mensagemErroProduto.textContent = "Não consegui carregar as fotos extras desta peça. Feche e abra de novo.";
+      return;
+    }
+
+    // Tudo numa só escrita: dados da peça e fotos entram juntos ou não entram.
     const alteracoes = {};
-    if (arquivo) {
-      alteracoes[`fotos/produtos/${id}`] = await prepararImagem(arquivo);
+    if (arquivoCapa) {
+      alteracoes[`fotos/produtos/${id}`] = await prepararImagem(arquivoCapa);
       campos.temFoto = true;
       campos.imagemUrl = null; // remove foto antiga guardada no formato anterior
     }
+
+    // Monta a lista final de extras, sem buracos: foto nova, ou a que já existia (se não foi removida).
+    const extrasFinais = [];
+    for (const slot of slots.slice(1)) {
+      if (slot.arquivo) extrasFinais.push(await prepararImagem(slot.arquivo));
+      else if (!slot.removida && slot.urlAtual) extrasFinais.push(slot.urlAtual);
+    }
+    // Grava só as posições que mudaram, pra não reenviar foto que já está no banco.
+    for (let posicao = 1; posicao < TOTAL_SLOTS; posicao++) {
+      const nova = extrasFinais[posicao - 1] ?? null;
+      if (nova !== (galeriaOriginal[posicao - 1] ?? null)) alteracoes[`fotos/galeria/${id}/${posicao}`] = nova;
+    }
+    campos.fotosExtras = extrasFinais.length;
+
     Object.entries(campos).forEach(([campo, valor]) => {
       alteracoes[`produtos/${id}/${campo}`] = valor;
     });
 
     await update(ref(db), alteracoes);
-    if (arquivo) invalidarFoto(`produtos/${id}`);
+    if (arquivoCapa) invalidarFoto(`produtos/${id}`);
+    invalidarFoto(`galeria/${id}`);
     dialogoProduto.close();
   } catch (erro) {
     console.error("Erro ao salvar a peça:", erro);

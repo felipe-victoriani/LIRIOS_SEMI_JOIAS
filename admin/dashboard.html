@@ -78,11 +78,12 @@
         <textarea id="campo-descricao" name="descricao" rows="3"></textarea>
       </div>
 
-      <div class="campo">
-        <label for="campo-imagem">Foto da peça</label>
-        <img id="previa-imagem" class="previa-imagem" alt="" hidden />
-        <input type="file" id="campo-imagem" accept="image/*" />
-      </div>
+      <fieldset class="campo fotos-peca">
+        <legend>Fotos da peça (até 3)</legend>
+        <p class="fotos-peca__ajuda">A primeira é a capa, a que aparece no catálogo. As outras só aparecem quando a cliente abre a peça.</p>
+        <!-- Os 3 espaços de foto são montados em js/admin/produtos.js -->
+        <div id="slots-fotos" class="fotos-peca__slots"></div>
+      </fieldset>
 
       <label class="campo-checkbox">
         <input type="checkbox" id="campo-ativo" name="ativo" checked />

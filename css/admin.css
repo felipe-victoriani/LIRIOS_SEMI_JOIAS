@@ -184,6 +184,15 @@
     border-radius: var(--raio-md);
     margin-bottom: var(--espaco-xs);
   }
+  /* Três espaços de foto lado a lado (empilham em tela estreita). */
+  .fotos-peca { border: none; padding: 0; min-width: 0; }
+  .fotos-peca legend { font-weight: 600; margin-bottom: var(--espaco-xs); padding: 0; }
+  .fotos-peca__ajuda { font-size: var(--tamanho-pequeno); color: var(--cor-texto-suave); margin-bottom: var(--espaco-xs); }
+  .fotos-peca__slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: var(--espaco-sm); }
+  .foto-slot { display: flex; flex-direction: column; align-items: flex-start; gap: var(--espaco-xs); min-width: 0; }
+  .foto-slot__rotulo { font-size: var(--tamanho-pequeno); font-weight: 700; color: var(--cor-texto-suave); }
+  .foto-slot input[type="file"] { max-width: 100%; font-size: var(--tamanho-pequeno); }
+  .foto-slot__previa { max-width: 100%; margin-bottom: 0; }
   .previa-imagem--redonda { width: 96px; height: 96px; max-width: none; border-radius: 50%; }
   .tabela-produtos td .previa-imagem--redonda { width: 48px; height: 48px; margin: 0; }
 }

@@ -35,6 +35,31 @@ const observador = new IntersectionObserver(
   { rootMargin: "200px" }
 );
 
+/**
+ * Devolve as fotos extras da peça (até 2) em ordem, como lista de data URLs.
+ * Ficam em /fotos/galeria/{produtoId}/{1|2}; só são baixadas quando alguém abre a galeria.
+ */
+export function carregarGaleria(produtoId) {
+  const caminho = `galeria/${produtoId}`;
+  if (!cache.has(caminho)) {
+    const pedido = get(ref(db, `fotos/${caminho}`))
+      .then((snapshot) => {
+        const dados = snapshot.val() || {};
+        // As posições são "1" e "2"; ordena pela chave e descarta lacunas.
+        return Object.keys(dados)
+          .sort()
+          .map((posicao) => dados[posicao])
+          .filter(Boolean);
+      })
+      .catch(() => {
+        cache.delete(caminho);
+        return [];
+      });
+    cache.set(caminho, pedido);
+  }
+  return cache.get(caminho);
+}
+
 /** Esquece a foto em cache depois de trocá-la, pra próxima leitura buscar a versão nova. */
 export function invalidarFoto(caminho) {
   cache.delete(caminho);
