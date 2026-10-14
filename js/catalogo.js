@@ -4,7 +4,7 @@ import { db } from "./firebase.js";
 import { formatarMoeda } from "./carrinho-core.js";
 import { adicionarAoCarrinho } from "./carrinho-ui.js";
 import { carregarFotoQuandoVisivel } from "./fotos.js";
-import { abrirGaleria } from "./galeria.js";
+import { abrirGaleria, preCarregarGaleria } from "./galeria.js";
 
 const gradeEl = document.getElementById("grade-produtos");
 const secaoCatalogoEl = document.getElementById("catalogo");
@@ -112,6 +112,10 @@ function criarCardProduto(produto) {
       botaoFotos.className = "produto-card__fotos";
       botaoFotos.setAttribute("aria-label", `Ver as ${total} fotos de ${produto.nome}`);
       botaoFotos.addEventListener("click", () => abrirGaleria(produto));
+      // Adianta o download das fotos quando a cliente aproxima o mouse ou o dedo da capa.
+      ["pointerenter", "focus", "touchstart"].forEach((tipo) =>
+        botaoFotos.addEventListener(tipo, () => preCarregarGaleria(produto), { once: true, passive: true })
+      );
       const selo = document.createElement("span");
       selo.className = "produto-card__selo-fotos";
       selo.textContent = `${total} fotos`;

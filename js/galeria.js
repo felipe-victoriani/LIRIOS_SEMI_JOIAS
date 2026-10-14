@@ -9,11 +9,14 @@ let contador = null;
 let titulo = null;
 let botaoAnterior = null;
 let botaoProximo = null;
+let botaoZoom = null;
 let slidesAtuais = [];
+let ultimoIndice = 0;
 
 // Ícones em SVG (sem emoji), herdam a cor do texto.
 const SETA_ESQUERDA = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m15 5-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const SETA_DIREITA = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ICONE_ZOOM = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5M11 8.5v5M8.5 11h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 const ICONE_FECHAR = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
 function criarBotaoIcone(classe, rotulo, svg) {
@@ -38,12 +41,40 @@ function irPara(indice) {
 // Atualiza contador, miniatura ativa e estado das setas conforme o slide visível.
 function sincronizarIndicadores() {
   const indice = indiceAtual();
+  // Ao passar para outra foto, a anterior volta ao tamanho normal.
+  if (indice !== ultimoIndice) {
+    faixa.querySelectorAll(".is-zoom").forEach((slide) => slide.classList.remove("is-zoom"));
+    ultimoIndice = indice;
+    atualizarBotaoZoom();
+  }
   contador.textContent = `${indice + 1} / ${slidesAtuais.length}`;
   miniaturas.querySelectorAll("button").forEach((botao, posicao) => {
     botao.setAttribute("aria-current", String(posicao === indice));
   });
   botaoAnterior.disabled = indice === 0;
   botaoProximo.disabled = indice === slidesAtuais.length - 1;
+}
+
+// O botão de zoom reflete se a foto atual está ampliada.
+function atualizarBotaoZoom() {
+  const ampliada = Boolean(faixa.children[indiceAtual()]?.classList.contains("is-zoom"));
+  botaoZoom.setAttribute("aria-pressed", String(ampliada));
+  botaoZoom.setAttribute("aria-label", ampliada ? "Reduzir foto" : "Ampliar foto");
+}
+
+// Amplia/reduz o slide. A foto ampliada é maior que a caixa e se move com a rolagem nativa
+// (arrastar com o dedo), sem biblioteca de gesto. `evento` dá o ponto a centralizar; sem ele, o centro.
+function alternarZoom(slide, evento) {
+  const imagem = slide.querySelector("img");
+  const caixa = imagem.getBoundingClientRect();
+  const x = evento && caixa.width ? (evento.clientX - caixa.left) / caixa.width : 0.5;
+  const y = evento && caixa.height ? (evento.clientY - caixa.top) / caixa.height : 0.5;
+  const ampliada = slide.classList.toggle("is-zoom");
+  if (ampliada) {
+    slide.scrollLeft = x * slide.scrollWidth - slide.clientWidth / 2;
+    slide.scrollTop = y * slide.scrollHeight - slide.clientHeight / 2;
+  }
+  atualizarBotaoZoom();
 }
 
 function criarDialogo() {
@@ -58,7 +89,16 @@ function criarDialogo() {
   titulo.className = "galeria__titulo";
   const botaoFechar = criarBotaoIcone("galeria__fechar", "Fechar fotos", ICONE_FECHAR);
   botaoFechar.addEventListener("click", () => dialogo.close());
-  cabecalho.append(titulo, botaoFechar);
+  botaoZoom = criarBotaoIcone("galeria__fechar", "Ampliar foto", ICONE_ZOOM);
+  botaoZoom.setAttribute("aria-pressed", "false");
+  botaoZoom.addEventListener("click", () => {
+    const slide = faixa.children[indiceAtual()];
+    if (slide?.classList.contains("galeria__slide")) alternarZoom(slide);
+  });
+  const acoes = document.createElement("div");
+  acoes.className = "galeria__acoes";
+  acoes.append(botaoZoom, botaoFechar);
+  cabecalho.append(titulo, acoes);
 
   const palco = document.createElement("div");
   palco.className = "galeria__palco";
@@ -105,11 +145,16 @@ function montarSlides(nome, urls) {
   faixa.setAttribute("aria-label", `Fotos de ${nome}`);
 
   urls.forEach((url, posicao) => {
+    const slide = document.createElement("div");
+    slide.className = "galeria__slide";
     const imagem = document.createElement("img");
     imagem.className = "galeria__foto";
     imagem.src = url;
     imagem.alt = `${nome} — foto ${posicao + 1} de ${urls.length}`;
-    faixa.append(imagem);
+    // Tocar/clicar na foto amplia no ponto tocado; tocar de novo reduz.
+    imagem.addEventListener("click", (evento) => alternarZoom(slide, evento));
+    slide.append(imagem);
+    faixa.append(slide);
 
     const botao = document.createElement("button");
     botao.type = "button";
@@ -130,6 +175,8 @@ function montarSlides(nome, urls) {
   miniaturas.hidden = !varias;
   contador.hidden = !varias;
   faixa.scrollLeft = 0;
+  ultimoIndice = 0;
+  atualizarBotaoZoom();
   sincronizarIndicadores();
 }
 
@@ -143,6 +190,10 @@ export async function abrirGaleria(produto) {
   botaoAnterior.hidden = true;
   botaoProximo.hidden = true;
   faixa.setAttribute("aria-busy", "true");
+  // Bloco pulsante no lugar da foto enquanto ela baixa.
+  const esqueleto = document.createElement("div");
+  esqueleto.className = "galeria__esqueleto";
+  faixa.append(esqueleto);
   if (!dialogo.open) dialogo.showModal();
 
   const [capa, extras] = await Promise.all([
@@ -150,6 +201,7 @@ export async function abrirGaleria(produto) {
     carregarGaleria(produto.id),
   ]);
   faixa.removeAttribute("aria-busy");
+  esqueleto.remove();
 
   // Se o diálogo foi fechado enquanto as fotos baixavam, não há o que montar.
   if (!dialogo.open) return;
@@ -159,4 +211,10 @@ export async function abrirGaleria(produto) {
     return;
   }
   montarSlides(produto.nome, urls);
+}
+
+/** Começa a baixar as fotos da peça antes do clique (chamado ao passar o mouse/focar na capa). */
+export function preCarregarGaleria(produto) {
+  if (!produto.imagemUrl) carregarFoto(`produtos/${produto.id}`);
+  carregarGaleria(produto.id);
 }

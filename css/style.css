@@ -944,8 +944,30 @@
     background: var(--cor-superficie);
     color: var(--cor-texto);
   }
-  .galeria::backdrop { background: color-mix(in oklch, var(--rosa-900) 70%, transparent); }
   .galeria[open] { display: flex; flex-direction: column; gap: var(--espaco-xs); }
+  /* Entrada/saída suaves em CSS puro (@starting-style + allow-discrete). Em navegador sem suporte,
+     o diálogo só aparece e some direto — nada quebra. */
+  .galeria {
+    opacity: 0;
+    translate: 0 14px;
+    transition: opacity var(--duracao-media) var(--easing-padrao), translate var(--duracao-media) var(--easing-padrao),
+      overlay var(--duracao-media) allow-discrete, display var(--duracao-media) allow-discrete;
+  }
+  .galeria[open] { opacity: 1; translate: 0 0; }
+  @starting-style {
+    .galeria[open] { opacity: 0; translate: 0 14px; }
+  }
+  .galeria::backdrop {
+    background: transparent;
+    transition: background-color var(--duracao-media) var(--easing-padrao), overlay var(--duracao-media) allow-discrete,
+      display var(--duracao-media) allow-discrete;
+  }
+  .galeria[open]::backdrop { background: color-mix(in oklch, var(--rosa-900) 70%, transparent); }
+  @starting-style {
+    .galeria[open]::backdrop { background: transparent; }
+  }
+  .galeria__acoes { display: flex; gap: var(--espaco-xs); }
+  .galeria__fechar[aria-pressed="true"] { background: var(--rosa-200); }
   .galeria__cabecalho { display: flex; align-items: center; justify-content: space-between; gap: var(--espaco-sm); }
   .galeria__titulo { font-size: var(--tamanho-h3); }
   .galeria__fechar,
@@ -974,14 +996,32 @@
     min-height: 8rem;
   }
   .galeria__faixa::-webkit-scrollbar { display: none; }
-  .galeria__foto {
+  .galeria__slide {
     flex: 0 0 100%;
+    max-height: 70dvh;
+    overflow: hidden;
+    scroll-snap-align: center;
+    scrollbar-width: none;
+  }
+  .galeria__slide::-webkit-scrollbar { display: none; }
+  .galeria__foto {
+    display: block;
     width: 100%;
     max-height: 70dvh;
     aspect-ratio: 1 / 1;
     object-fit: contain;
-    scroll-snap-align: center;
+    cursor: zoom-in;
   }
+  /* Foto ampliada: 2,5x maior que a caixa; o slide rola pra mover a imagem. */
+  .galeria__slide.is-zoom { overflow: auto; }
+  .galeria__slide.is-zoom .galeria__foto { width: 250%; max-width: none; max-height: none; cursor: zoom-out; }
+  .galeria__esqueleto {
+    flex: 0 0 100%;
+    aspect-ratio: 1 / 1;
+    background: var(--rosa-100);
+    animation: pulsar-esqueleto 1.2s ease-in-out infinite alternate;
+  }
+  @keyframes pulsar-esqueleto { from { opacity: 0.45; } to { opacity: 1; } }
   .galeria__seta { position: absolute; top: 50%; translate: 0 -50%; }
   .galeria__seta--anterior { left: var(--espaco-xs); }
   .galeria__seta--proxima { right: var(--espaco-xs); }
@@ -1002,6 +1042,8 @@
   .galeria__contador { font-size: var(--tamanho-pequeno); color: var(--cor-texto-suave); }
   @media (prefers-reduced-motion: reduce) {
     .galeria__faixa { scroll-behavior: auto; }
+    .galeria, .galeria::backdrop { transition: none; }
+    .galeria__esqueleto { animation: none; }
   }
 
   .painel-carrinho__rodape { display: flex; flex-direction: column; gap: var(--espaco-sm); }
